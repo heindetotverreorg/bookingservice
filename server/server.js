@@ -24,7 +24,8 @@ app.listen(port, () => {
 })
 
 const reservePadel = async () => {
-  const time = 10.00
+  try {
+    const time = '10:00'
     const returnData = {}
     const main = async () => {
         const browser = await puppeteer.launch({
@@ -34,36 +35,25 @@ const reservePadel = async () => {
         // go to url
         await page.goto('https://bent.baanreserveren.nl/reservations');
         // login
-        await page.waitForSelector('input[name="username"]')
-        await page.evaluate(() => {
-          document.querySelector('input[name="username"]').value = 'mpoortvliet8570';
-          document.querySelector('input[name="password"]').value = '10*Matthias';
-        })
-        await page.click('.button3')
+        await login(page)
         // go to correct date
-        await page.waitForSelector('a[data-offset="+1"]');
-        await page.click('a[data-offset="+1"]')
-        await delay(1000);
-        await page.click('a[data-offset="+1"]')
-        await delay(1000);
-        await page.click('a[data-offset="+1"]')
-        await delay(1000);
+        await setCorrectDate(page)
         // select correct sport
         await page.select('#matrix-sport', 'sport/1280')
         // select timeslot on court
-        let court = 1
-        try {
-          await selectCourt(page, time, court)
-        } catch (error) {
-          await selectCourt(page, time, court++)
-        }
+        const court = await selectCourt(page, time)
+        // do all the other stuff
+        await delay(5000);
         returnData.bookedCourt = court
         returnData.bookedTime = time
-        await delay(5000);
+        returnData.bookedDate = 'today + 4'
         await browser.close();
     }
-    main();
+    await main();
     return returnData
+  } catch (error) {
+    return error
+  }
 }
 
 function delay(time) {
@@ -72,9 +62,34 @@ function delay(time) {
    });
 }
 
-async function selectCourt(page, time, court) {
-  const courtSelector = `tr[data-time="${time}"] [title="Padel Buiten ${court}"]`
-  console.log(courtSelector)
-  const courtOne = await page.waitForSelector(courtSelector);
-  courtOne.click()
+async function selectCourt(page, time) {
+  let court = 1
+  if (court > 4) return
+  try {
+    const courtSelector = `tr[data-time="${time}"] [title="Padel Buiten ${court}"]`
+    const courtOne = await page.waitForSelector(courtSelector);
+    courtOne.click()
+    return court
+  } catch(error) {
+    await selectCourt(page, time, court++)
+  }
+}
+
+async function login(page) {
+  await page.waitForSelector('input[name="username"]')
+  await page.evaluate(() => {
+    document.querySelector('input[name="username"]').value = 'mpoortvliet8570';
+    document.querySelector('input[name="password"]').value = '10*Matthias';
+  })
+  await page.click('.button3')
+}
+
+async function setCorrectDate(page) {
+  await page.waitForSelector('a[data-offset="+1"]');
+  await page.click('a[data-offset="+1"]')
+  await delay(1000);
+  await page.click('a[data-offset="+1"]')
+  await delay(1000);
+  await page.click('a[data-offset="+1"]')
+  await delay(1000);
 }

@@ -6,19 +6,31 @@
       {{ person }}
     </li>
   </ul>
-  <p>date and time:</p>
-  <p>{{ date }}</p>
+  <p>date and time: (default is every wednesday at {{ defaultTime }} )</p>
+  <input type="date"/>
+  <input type="number" placeholder="time"/>
+  <p>chosen date/time {{ chosenDate }} - {{ defaultTime }}"</p>
   <button @click="reserve">Reserveren</button>
   <p>{{ bookingResult }}</p>
 </template>
 
 <script setup>
 import axios from 'axios'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
   const bookingResult = ref({})
+  const chosenDate = ref('')
+  const defaultTime = ref('19:30')
 
-  const date = new Date().toLocaleString();
+  onMounted(() => {
+    date()
+  })
+
+  const date = () => {
+    const today = new Date();
+    today.setDate(today.getDate() + 4)
+    chosenDate.value = today.toLocaleDateString();
+  }
 
   const people = [
     'jona',
@@ -32,11 +44,12 @@ import { ref } from 'vue'
     const url = `http://${hostname}:${process.env.VUE_APP_SERVERPORT}/reserve`
 
     try {
-      const bookingResult = await axios.post(url, {
-        date: date,
+      const { data } = await axios.post(url, {
+        date: chosenDate.value,
+        time: defaultTime.value,
         people: people
       })
-      bookingResult.value = bookingResult
+      bookingResult.value = data
     } catch (error) {
       console.log(error)
     }
