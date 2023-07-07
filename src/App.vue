@@ -9,10 +9,14 @@
   <p>date and time:</p>
   <p>{{ date }}</p>
   <button @click="reserve">Reserveren</button>
+  <p>{{ bookingResult }}</p>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import axios from 'axios'
+import { ref } from 'vue'
+
+  const bookingResult = ref({})
 
   const date = new Date().toLocaleString();
 
@@ -24,18 +28,15 @@ import axios from 'axios'
   ]
 
   const reserve = async () => {
-    console.log(process.env);
-
     const hostname = new URL(window.location.href).hostname
-    const url = `http://${hostname}:${3000}/reserve`
-
-    console.log(url)
+    const url = `http://${hostname}:${process.env.VUE_APP_SERVERPORT}/reserve`
 
     try {
-      await axios.post(url, {
+      const bookingResult = await axios.post(url, {
         date: date,
         people: people
       })
+      bookingResult.value = bookingResult
     } catch (error) {
       console.log(error)
     }
