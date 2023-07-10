@@ -43,24 +43,34 @@ const reservePadel = async (date, time, people, setBrowserCallBack) => {
     // go to url
     console.log('go to url')
     await page.goto('https://bent.baanreserveren.nl/reservations');
+
     // login
     console.log('login')
     await login(page)
+
     // go to correct date
     console.log('go to correct date')
     await setCorrectDate(page)
+
     // select correct sport
     console.log('select correct sport')
     await page.select('#matrix-sport', 'sport/1280')
+
     // select timeslot on court
     console.log('select correct timeslot on court')
     let { court } = await selectCourt(page, time)
+
     // select people
+    console.log('select people')
      await selectPeople(page, people)
+
     // click book
+    console.log('book')
     page.click('#__make_submit')
     await page.waitForSelector('form')
     await delay(20000);
+
+    // handle result
     returnData.bookedCourt = court
     returnData.bookedTime = time
     returnData.bookedDate = 'today + 4'
@@ -106,17 +116,34 @@ async function selectPeople(page, people) {
       const newIndex = index + 2
       if (index === people.length) return
       const selector = `[name="players[${newIndex}]"]`
+
       const options = await page.evaluate(({ selector }) => {
         const selectEl = document.querySelector(selector)
-        const options = [...selectEl.options]
-        return options.map(option => ({ text: option.text, searchValue: option.value }))
+        if (selectEl) {
+          const options = [...selectEl.options]
+          return options.map(option => ({ text: option.text, searchValue: option.value }))
+        }
       }, { selector })
-      const selectedOption = options.find(option => option.text === person)
+
+      const filteredOptions = options?.reduce((acc, option) => {
+        if (acc.find(accOption => accOption.text === option.text)) {
+          return acc
+        }
+        return [ ...acc, option ]
+      }, [])
+
+      const selectedOption = filteredOptions?.find(option => option.text === person)
+
       if (selectedOption?.searchValue) {
-        await page.select(selector, selectedOption.searchValue)
+        const selectEl = await page.waitForSelector(selector)
+        if (selectEl.value !== selectedOption.searchValue) {
+          await page.select(selector, selectedOption.searchValue)
+        }
       }
     })
+    
     await selectPerson(people)
+    await page.waitForSelector('form')
     return
   } catch (error) {
     handleError({ message: 'error: couldnt select people: ', body: people, error })

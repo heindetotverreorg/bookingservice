@@ -34,9 +34,9 @@ import { onMounted, ref } from 'vue'
 
   const people = [
     'Jonathan Ouwehand',
-    'patrick',
-    'ricky',
-    'matthias' 
+    'Patrick Gieling',
+    'Ricky de Haan',
+    'Matthias Poortvliet' 
   ]
 
   const reserve = async () => {
