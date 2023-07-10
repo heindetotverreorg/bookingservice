@@ -10,12 +10,18 @@ app.use(express.json())
 
 app.use(express.static(path.join(__dirname, '../dist')));
 
+let browser = null
+
+const setBrowserCallBack = (browserToClose) => browser = browserToClose
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 app.post('/reserve', async (req, res) => {
-  const data = await reservePadel(req, res)
+  const { date, time, people } = req.body
+  console.log(`payload: ${date} ${time} ${people}`)
+  const data = await reservePadel(date, time, people, setBrowserCallBack)
   res.send(data)
 })
 
@@ -23,37 +29,52 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-const reservePadel = async () => {
+const reservePadel = async (date, time, people, setBrowserCallBack) => {
+  const returnData = {}
+  
   try {
-    const time = '10:00'
-    const returnData = {}
-    const main = async () => {
-        const browser = await puppeteer.launch({
-            headless: false
-        });
-        const page = await browser.newPage();
-        // go to url
-        await page.goto('https://bent.baanreserveren.nl/reservations');
-        // login
-        await login(page)
-        // go to correct date
-        await setCorrectDate(page)
-        // select correct sport
-        await page.select('#matrix-sport', 'sport/1280')
-        // select timeslot on court
-        const court = await selectCourt(page, time)
-        // do all the other stuff
-        await delay(5000);
-        returnData.bookedCourt = court
-        returnData.bookedTime = time
-        returnData.bookedDate = 'today + 4'
-        await browser.close();
-    }
-    await main();
+    const browser = await puppeteer.launch({
+      headless: false
+    });
+    const page = await browser.newPage();
+    setBrowserCallBack(browser)
+    page.setDefaultTimeout(2000);
+
+    // go to url
+    console.log('go to url')
+    await page.goto('https://bent.baanreserveren.nl/reservations');
+    // login
+    console.log('login')
+    await login(page)
+    // go to correct date
+    console.log('go to correct date')
+    await setCorrectDate(page)
+    // select correct sport
+    console.log('select correct sport')
+    await page.select('#matrix-sport', 'sport/1280')
+    // select timeslot on court
+    console.log('select correct timeslot on court')
+    let { court } = await selectCourt(page, time)
+    // select people
+     await selectPeople(page, people)
+    // click book
+    page.click('#__make_submit')
+    await page.waitForSelector('form')
+    await delay(20000);
+    returnData.bookedCourt = court
+    returnData.bookedTime = time
+    returnData.bookedDate = 'today + 4'
+    
+    await browser.close();
     return returnData
   } catch (error) {
     return error
   }
+}
+
+function handleError(params) {
+  browser.close()
+  throw `${params.message} ${params.body} ${params.error}`
 }
 
 function delay(time) {
@@ -62,16 +83,43 @@ function delay(time) {
    });
 }
 
-async function selectCourt(page, time) {
-  let court = 1
-  if (court > 4) return
+async function selectCourt(page, time, court = 1) {
   try {
     const courtSelector = `tr[data-time="${time}"] [title="Padel Buiten ${court}"]`
     const courtOne = await page.waitForSelector(courtSelector);
     courtOne.click()
-    return court
+    await page.waitForSelector('.lightbox')
+    return {
+      court
+    }
   } catch(error) {
-    await selectCourt(page, time, court++)
+    if (court <= 4) {
+      await selectCourt(page, time, court + 1)
+    }
+    handleError({ message: 'error: couldnt book court for timeslot: ', body: time, error })
+  }
+}
+
+async function selectPeople(page, people) {
+  try {
+    const selectPerson = async (people) => people.forEach(async (person, index) => {
+      const newIndex = index + 2
+      if (index === people.length) return
+      const selector = `[name="players[${newIndex}]"]`
+      const options = await page.evaluate(({ selector }) => {
+        const selectEl = document.querySelector(selector)
+        const options = [...selectEl.options]
+        return options.map(option => ({ text: option.text, searchValue: option.value }))
+      }, { selector })
+      const selectedOption = options.find(option => option.text === person)
+      if (selectedOption?.searchValue) {
+        await page.select(selector, selectedOption.searchValue)
+      }
+    })
+    await selectPerson(people)
+    return
+  } catch (error) {
+    handleError({ message: 'error: couldnt select people: ', body: people, error })
   }
 }
 
@@ -87,9 +135,9 @@ async function login(page) {
 async function setCorrectDate(page) {
   await page.waitForSelector('a[data-offset="+1"]');
   await page.click('a[data-offset="+1"]')
-  await delay(1000);
+  await delay(500);
   await page.click('a[data-offset="+1"]')
-  await delay(1000);
+  await delay(500);
   await page.click('a[data-offset="+1"]')
-  await delay(1000);
+  await delay(500);
 }

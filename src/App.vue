@@ -7,8 +7,8 @@
     </li>
   </ul>
   <p>date and time: (default is every wednesday at {{ defaultTime }} )</p>
-  <input type="date"/>
-  <input type="number" placeholder="time"/>
+  <input type="date" placeholder="date dd/mm/yyyy"/>
+  <input type="text" placeholder="time hh:mm"/>
   <p>chosen date/time {{ chosenDate }} - {{ defaultTime }}"</p>
   <button @click="reserve">Reserveren</button>
   <p>{{ bookingResult }}</p>
@@ -20,7 +20,7 @@ import { onMounted, ref } from 'vue'
 
   const bookingResult = ref({})
   const chosenDate = ref('')
-  const defaultTime = ref('19:30')
+  const defaultTime = ref('14:30')
 
   onMounted(() => {
     date()
@@ -33,7 +33,7 @@ import { onMounted, ref } from 'vue'
   }
 
   const people = [
-    'jona',
+    'Jonathan Ouwehand',
     'patrick',
     'ricky',
     'matthias' 
