@@ -20,7 +20,7 @@ import { onMounted, ref } from 'vue'
 
   const bookingResult = ref({})
   const chosenDate = ref('')
-  const defaultTime = ref('14:30')
+  const defaultTime = ref('19:30')
 
   onMounted(() => {
     date()
@@ -28,7 +28,7 @@ import { onMounted, ref } from 'vue'
 
   const date = () => {
     const today = new Date();
-    today.setDate(today.getDate() + 4)
+    today.setDate(today.getDate() + 3)
     chosenDate.value = today.toLocaleDateString();
   }
 
