@@ -2,7 +2,7 @@ let browser = null
 
 const init = (page, freshBrowser) => {
   browser = freshBrowser
-  page.setDefaultTimeout(10000);
+  page.setDefaultTimeout(2000);
 }
 
 const login = async (page) => {
@@ -17,7 +17,7 @@ const login = async (page) => {
 const selectDate = async (page, date) => {
   const regex = new RegExp("^0+(?!$)",'g');
   try {
-    const [day, month, year] = date.split('/')
+    const [month, day, year] = date.split('/')
     const selector = `#cal_${year}_${month.replaceAll(regex, '')}_${day}`
     await page.waitForSelector(selector)
     page.click(`${selector} a`)
@@ -37,17 +37,38 @@ const selectSport = async (page) => {
 const selectCourt = async (page, time, court = 1) => {
   try {
     const courtSelector = `tr[data-time="${time}"] [title="Padel Buiten ${court}"]`
-    const courtOne = await page.waitForSelector(courtSelector);
-    courtOne.click()
+    const selectedCourt = await page.waitForSelector(courtSelector);
+    selectedCourt.click()
+    
     await page.waitForSelector('.lightbox')
+
     return {
       court
     }
   } catch(error) {
     if (court <= 4) {
-      await selectCourt(page, time, court + 1)
+      return await selectCourt(page, time, court + 1)
+    } else {
+      handleError({ message: 'error: couldnt book court for timeslot: ', body: time, error })
     }
-    handleError({ message: 'error: couldnt book court for timeslot: ', body: time, error })
+  }
+}
+
+const checkForBookingType = async (page) => {
+  try {
+    const els = await page.evaluate(() => {
+      const popup = document.querySelector('.lightbox')
+      const matches = popup.querySelectorAll('td')
+      return [...matches].map(match => ({ text: match.innerText }))
+    })
+
+    const isPeak = !!els.find(el => el.text.includes('piek'))
+  
+    return {
+      isPeak
+    }
+  } catch (error) {
+    handleError({ message: 'error: check for booking type: ', body: '', error })
   }
 }
 
@@ -96,17 +117,46 @@ const selectPeople = async (page, people) => {
 
     await selectPerson(people)
     await page.waitForSelector('form')
-    return
+    return 
   } catch (error) {
     handleError({ message: 'error: couldnt select people: ', body: people, error })
   }
 }
 
-const book = async (page) => {
-  page.click('#__make_submit')
-  await page.waitForSelector('form')
-  await delay(20000);
-    // await page.click('submit button')
+const book = async (page, test = true) => {
+  try {
+    page.click('#__make_submit')
+
+    page.on('dialog', async dialog => {
+      await dialog.dismiss();
+    })
+    // important to actually close the dialog (if its present) or the worker wont shut down properly, so we delay a bit
+    await delay(2000)
+
+    const els = await page.evaluate(() => {
+      const matches = document.querySelectorAll('th')
+      return [...matches].map(match => ({ text: match.innerText }))
+    })
+
+    const isConfirmModalVisible = !!els.find(el => el.text.includes('Bevestig uw reservering'))
+
+    if (!isConfirmModalVisible) {
+      throw 'An error occurred while booking, confirm window not visible, check data and time and try again'
+    }
+
+    if (test) {
+      console.log('TEST = SUCCESS')
+      await page.click('#__make_cancel2')
+      await delay(1000)
+      await page.click('#__make_cancel')
+    } else {
+      await page.click('#__make_submit2')
+    }
+    
+    return
+  } catch (error) {
+    handleError({ message: 'error: couldnt submit', body: '', error })
+  }
 }
 
 const delay = (time) => {
@@ -114,7 +164,6 @@ const delay = (time) => {
       setTimeout(resolve, time)
   });
 }
-
 
 const handleError = (params) => {
   browser.close()
@@ -127,6 +176,7 @@ module.exports = {
   selectDate,
   selectSport,
   selectCourt,
+  checkForBookingType,
   selectPeople,
   book
 }

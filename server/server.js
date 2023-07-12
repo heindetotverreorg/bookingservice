@@ -6,7 +6,7 @@ const port = process.env.VUE_APP_SERVERPORT || 3001
 const puppeteer = require('puppeteer')
 const crawls = require('./crawls')
 
-const { init, login, selectDate, selectSport, selectCourt, selectPeople, book } = crawls
+const { init, login, selectDate, selectSport, selectCourt, checkForBookingType, selectPeople, book } = crawls
 
 app.use(cors())
 app.use(express.json())
@@ -18,10 +18,10 @@ app.get('/', (req, res) => {
 });
 
 app.post('/reserve', async (req, res) => {
-  const { date, time, people } = req.body
-  console.log(`payload: ${date} ${time} ${people}`)
+  const { date, time, people, test } = req.body
+  console.log(`payload: ${date} ${time} ${people} is test ${test}`)
 
-  const data = await reservePadel(date, time, people)
+  const data = await reservePadel(date, time, people, test)
   res.send(data)
 })
 
@@ -29,46 +29,71 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-const reservePadel = async (date, time, people) => {
+const reservePadel = async (date, time, people, test) => {
   const returnData = {}
+  let pass = 0
+
+  const browser = await puppeteer.launch({
+    headless: false
+  });
   
   try {
-    const browser = await puppeteer.launch({
-      headless: false
-    });
     const page = await browser.newPage();
 
     init(page, browser)
 
-    // go to url
     await page.goto('https://bent.baanreserveren.nl/reservations');
 
-    // login
     await login(page)
 
-    // go to correct date
     const { bookedDate } = await selectDate(page, date)
 
-    // select correct sport
     await selectSport(page)
 
-    // select timeslot on court
-    const { court } = await selectCourt(page, time)
+    const { court: courtFirstBooking, time: timeFirstBooking, isPeak } = await repeatableSections(pass, page, time, people, test)
+    const { court: courtSecondBooking, time: timeSecondBooking } = await repeatableSections(pass + 1, page, time, people, test, isPeak)
 
-    // select people
-    await selectPeople(page, people)
-
-    // click book
-    await book(page)
-
-    // handle result
-    returnData.bookedCourt = court
-    returnData.bookedTime = time
+    returnData.bookedCourt = `Court: 1st booking: ${courtFirstBooking}, 2nd booking: ${courtSecondBooking}}`
+    returnData.bookedTime = `Time: 1st booking: ${timeFirstBooking}, 2nd booking: ${timeSecondBooking}}`
     returnData.bookedDate = bookedDate
     
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
+
     return returnData
   } catch (error) {
     return error
   }
+}
+
+const parseTimeAndAdd = (time) => {
+  const [ hours, minutes ] = time.split(':')
+  if (minutes === '00') {
+    return `${hours}:${parseInt(minutes + 30)}`
+  }
+  return `${parseInt(hours) + 1}:${parseInt(minutes - 30)}`
+}
+
+const repeatableSections = async (pass, page, time, people, test, isPreviousBookingPeak) => {
+  if (pass !== 0 && !isPreviousBookingPeak) {
+    return {
+      court: '',
+      time: ''
+    }
+  }
+
+  if (pass > 0) {
+    time = parseTimeAndAdd(time)
+  }
+
+  const { court } = await selectCourt(page, time)
+
+  const { isPeak } = await checkForBookingType(page) 
+
+  await selectPeople(page, people)
+
+  await book(page, test)
+
+  return { court, time, isPeak }
 }

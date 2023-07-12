@@ -9,6 +9,7 @@
   <p>date and time: (default is every wednesday at {{ defaultTime }} )</p>
   <input type="date" placeholder="date dd/mm/yyyy"/>
   <input type="text" placeholder="time hh:mm"/>
+  <label for="1">check for test run</label><input type="checkbox" id="1" v-model="testValue" />
   <p>chosen date/time {{ chosenDate }} - {{ defaultTime }}"</p>
   <button @click="reserve">Reserveren</button>
   <p>{{ bookingResult }}</p>
@@ -20,7 +21,8 @@ import { onMounted, ref } from 'vue'
 
   const bookingResult = ref({})
   const chosenDate = ref('')
-  const defaultTime = ref('19:30')
+  const defaultTime = ref('18:00')
+  const testValue = ref(true)
 
   onMounted(() => {
     date()
@@ -28,7 +30,7 @@ import { onMounted, ref } from 'vue'
 
   const date = () => {
     const today = new Date();
-    today.setDate(today.getDate() + 3)
+    today.setDate(today.getDate() + 2)
     chosenDate.value = today.toLocaleDateString();
   }
 
@@ -47,7 +49,8 @@ import { onMounted, ref } from 'vue'
       const { data } = await axios.post(url, {
         date: chosenDate.value,
         time: defaultTime.value,
-        people: people
+        people: people,
+        test: testValue.value
       })
       bookingResult.value = data
     } catch (error) {
