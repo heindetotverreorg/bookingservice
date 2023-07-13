@@ -96,6 +96,8 @@ import { onMounted, ref, computed } from 'vue'
     const url = `http://${hostname}:${process.env.SERVERPORT}/reserve`
     const date = new Date(chosenDate.value).toLocaleDateString();
 
+    console.log(url)
+
     const payload = {
       date: date,
         time: defaultTime.value,
