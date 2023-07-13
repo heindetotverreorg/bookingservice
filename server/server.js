@@ -37,7 +37,6 @@ const reservePadel = async (date, time, people, test) => {
   let pass = 0
 
   const browser = await puppeteer.launch({
-    executablePath: '/usr/bin/google-chrome',
     headless: true
   });
   
