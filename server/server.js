@@ -31,6 +31,7 @@ app.listen(port, () => {
 
 const reservePadel = async (date, time, people, test) => {
   const returnData = {}
+  const url = 'https://bent.baanreserveren.nl/reservations';
   let pass = 0
 
   const browser = await puppeteer.launch({
@@ -40,9 +41,7 @@ const reservePadel = async (date, time, people, test) => {
   try {
     const page = await browser.newPage();
 
-    init(page, browser)
-
-    await page.goto('https://bent.baanreserveren.nl/reservations');
+    await init(page, browser, url)
 
     await login(page)
 
@@ -53,9 +52,13 @@ const reservePadel = async (date, time, people, test) => {
     const { court: courtFirstBooking, time: timeFirstBooking, isPeak } = await repeatableSections(pass, page, time, people, test)
     const { court: courtSecondBooking, time: timeSecondBooking } = await repeatableSections(pass + 1, page, time, people, test, isPeak)
 
-    returnData.bookedCourt = `Court 1st booking: ${courtFirstBooking}, 2nd booking: ${courtSecondBooking ? courtSecondBooking : 'one court booked: no peak time'}}`
-    returnData.bookedTime = `Time 1st booking: ${timeFirstBooking}, 2nd booking: ${timeSecondBooking ? timeSecondBooking : 'single one hour booking: no peak time'}}`
-    returnData.bookedDate = bookedDate
+    console.log(courtSecondBooking, timeSecondBooking)
+
+    returnData.bookedCourt = `Booked Court(s): Court ${courtFirstBooking} ${courtSecondBooking ? ' and court' : ''} ${courtSecondBooking ? courtSecondBooking : ''}`
+    returnData.bookedTime = `Booked Time(s): ${timeFirstBooking} ${timeSecondBooking ? 'and' : ''} ${timeSecondBooking ? timeSecondBooking : ''}`
+    returnData.bookedDate = `Booked date: ${bookedDate}`
+
+    console.log(returnData)
     
     if (browser) {
       await browser.close();
@@ -76,7 +79,7 @@ const parseTimeAndAdd = (time, timetoSet = 30) => {
 }
 
 const repeatableSections = async (pass, page, time, people, test, isPreviousBookingPeak) => {
-  // bail when we are not in peak time and we run it second time
+  // bail when it is second run but we are not in peak time
   if (pass !== 0 && !isPreviousBookingPeak) {
     return { }
   }

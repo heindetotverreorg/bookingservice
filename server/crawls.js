@@ -1,8 +1,9 @@
 let browser = null
 
-const init = (page, freshBrowser) => {
+const init = async (page, freshBrowser, url) => {
   browser = freshBrowser
   page.setDefaultTimeout(2000);
+  await page.goto(url);
 }
 
 const login = async (page) => {

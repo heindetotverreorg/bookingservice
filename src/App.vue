@@ -9,8 +9,12 @@
     </ul>
   </div>
   <div>
-    <h3>date and time: (default is every wednesday at {{ defaultTime }} )</h3>
-    <input type="date" :valueAsDate="chosenDate"/>
+    <h3>date and time: (default is every wednesday at 19:00 )</h3>
+    <h4>PS: run script on sunday to auto book on wednesday, or select a date from datepicker</h4>
+    <input
+      type="date"
+      v-model="chosenDate"
+    />
     <label for="time-select">Choose a time:</label>
     <select
       name="time"
@@ -38,12 +42,15 @@
   <div>
     <button @click="reserve">Reserveren</button>
   </div>
-  <p>{{ bookingResult }}</p>
+  <p v-if="!parsedResult">{{ bookingResult }}</p>
+  <div v-else>
+    <h2 v-for="line of parsedResult" :key="line">{{ line }}</h2>
+  </div>
 </template>
 
 <script setup>
 import axios from 'axios'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 
   const bookingResult = ref({})
   const chosenDate = ref('')
@@ -59,6 +66,13 @@ import { onMounted, ref } from 'vue'
     today.setDate(today.getDate() + 3)
     chosenDate.value = today.toLocaleDateString();
   }
+
+  const parsedResult = computed(() => {
+    if (typeof bookingResult.value !== 'string' && Object.values(bookingResult.value).length) {
+      return Object.values(bookingResult.value)
+    }
+    return null
+  })
 
   const people = [
     'Jonathan Ouwehand',
@@ -80,14 +94,17 @@ import { onMounted, ref } from 'vue'
   const reserve = async () => {
     const hostname = new URL(window.location.href).hostname
     const url = `http://${hostname}:${process.env.VUE_APP_SERVERPORT}/reserve`
+    const date = new Date(chosenDate.value).toLocaleDateString();
 
-    try {
-      const { data } = await axios.post(url, {
-        date: chosenDate.value,
+    const payload = {
+      date: date,
         time: defaultTime.value,
         people: people,
         test: testValue.value
-      })
+    }
+
+    try {
+      const { data } = await axios.post(url, payload)
       bookingResult.value = data
     } catch (error) {
       console.log(error)
