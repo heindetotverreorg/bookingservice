@@ -4,7 +4,7 @@ const express = require('express')
 const app = express()
 const path = require('path');
 const cors = require('cors')
-const port = process.env.SERVERPORT
+const port = process.env.VUE_APP_SEVERPORT
 const puppeteer = require('puppeteer')
 const crawls = require('./crawls')
 
