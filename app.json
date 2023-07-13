@@ -1,3 +1,7 @@
 {
-    "postdeploy": "npm install"
-}
+    "scripts": {
+      "dokku": {
+        "postdeploy": "npm install"
+      }
+    }
+  }
