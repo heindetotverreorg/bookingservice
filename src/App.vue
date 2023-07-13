@@ -98,10 +98,8 @@ import { onMounted, ref, computed } from 'vue'
   }
 
   const reserve = async () => {
-    const url = `http://127.0.0.1:${process.env.VUE_APP_SEVERPORT}/reserve`
+    const url = process.env.VUE_APP_BOOKING_URL
     const date = new Date(chosenDate.value).toLocaleDateString();
-
-    console.log(url)
 
     const payload = {
       date: date,
