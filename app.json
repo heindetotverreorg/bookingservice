@@ -1,5 +1,3 @@
 {
-    "scripts": {
-        "postdeploy": "yarn install"
-    }
+    "postdeploy": "npm install"
 }
