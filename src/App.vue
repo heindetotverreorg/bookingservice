@@ -1,6 +1,8 @@
 <template>
   <h1>Reserveren padel</h1>
   <div>
+    <h3>Bookee</h3>
+    <p>{{ bookee }}</p>
     <h3>people</h3>
     <ul>
       <li v-for="person of people" :key="person">
@@ -11,8 +13,10 @@
   <div>
     <h3>date and time: (default is every wednesday at 19:00 )</h3>
     <h4>PS: run script on sunday to auto book on wednesday, or select a date from datepicker</h4>
+    <label for="date-select">Choose a date:</label>
     <input
       type="date"
+      id="date-select"
       v-model="chosenDate"
     />
     <label for="time-select">Choose a time:</label>
@@ -81,6 +85,8 @@ import { onMounted, ref, computed } from 'vue'
     'Matthias Poortvliet' 
   ]
 
+  const bookee = 'Matthias Poortvliet'
+
   const timeOptions = () => {
     const arr = []
     for (let i = 14; i < 46; i++) {
@@ -95,9 +101,6 @@ import { onMounted, ref, computed } from 'vue'
     const hostname = new URL(window.location.href).hostname
     const url = `http://${hostname}:${process.env.VUE_APP_SEVERPORT}/reserve`
     const date = new Date(chosenDate.value).toLocaleDateString();
-
-    console.log(process.env)
-    console.log(url)
 
     const payload = {
       date: date,
