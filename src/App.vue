@@ -11,7 +11,6 @@
     </ul>
   </div>
   <div>
-    <h3>date and time: (default is every wednesday at 19:00 )</h3>
     <h4>PS: run script on sunday to auto book on wednesday, or select a date from datepicker</h4>
     <label for="date-select">Choose a date:</label>
     <input
