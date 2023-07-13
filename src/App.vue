@@ -105,9 +105,9 @@ import { onMounted, ref, computed } from 'vue'
 
     const payload = {
       date: date,
-        time: defaultTime.value,
-        people: people,
-        test: testValue.value
+      time: defaultTime.value,
+      people: people,
+      test: testValue.value
     }
 
     try {

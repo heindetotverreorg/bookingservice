@@ -18,7 +18,7 @@ const login = async (page) => {
 const selectDate = async (page, date) => {
   const regex = new RegExp("^0+(?!$)",'g');
   try {
-    const [month, day, year] = date.split('/')
+    const [day, month, year] = date.split('/')
     const selector = `#cal_${year}_${month.replaceAll(regex, '')}_${day}`
     await page.waitForSelector(selector)
     page.click(`${selector} a`)
@@ -164,7 +164,7 @@ const book = async (page, test = true) => {
     const isConfirmModalVisible = !!els.find(el => el.text.includes('Bevestig uw reservering'))
 
     if (!isConfirmModalVisible) {
-      throw 'An error occurred while booking, confirm window not visible, check data and time and try again'
+      throw 'An error occurred while booking, confirm window not visible, check for double booking'
     }
 
     if (test) {
