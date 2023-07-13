@@ -45,6 +45,7 @@
   <div>
     <button @click="reserve">Reserveren</button>
   </div>
+  <p v-if="isLoading">LOADING ....</p>
   <p v-if="!parsedResult">{{ bookingResult }}</p>
   <div v-else>
     <h2 v-for="line of parsedResult" :key="line">{{ line }}</h2>
@@ -59,6 +60,7 @@ import { onMounted, ref, computed } from 'vue'
   const chosenDate = ref('')
   const defaultTime = ref('19:00')
   const testValue = ref(true)
+  const isLoading = ref(false)
 
   onMounted(() => {
     date()
@@ -109,10 +111,13 @@ import { onMounted, ref, computed } from 'vue'
     }
 
     try {
+      isLoading.value = true
       const { data } = await axios.post(url, payload)
       bookingResult.value = data
+      isLoading.value = false
     } catch (error) {
       console.log(error)
+      isLoading.value = false
     }
   }
 </script>
