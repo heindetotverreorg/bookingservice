@@ -2,7 +2,7 @@ let browser = null
 
 const init = async (page, freshBrowser, url) => {
   browser = freshBrowser
-  page.setDefaultTimeout(2000);
+  page.setDefaultTimeout(5000);
   await page.goto(url);
 }
 
