@@ -101,6 +101,8 @@ import { onMounted, ref, computed } from 'vue'
     const url = process.env.VUE_APP_BOOKING_URL
     const date = new Date(chosenDate.value).toLocaleDateString();
 
+    console.log(process.env)
+
     const payload = {
       date: date,
         time: defaultTime.value,
@@ -109,7 +111,6 @@ import { onMounted, ref, computed } from 'vue'
     }
 
     try {
-      console.log(url)
       const { data } = await axios.post(url, payload)
       bookingResult.value = data
     } catch (error) {
