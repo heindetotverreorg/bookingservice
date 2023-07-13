@@ -93,7 +93,7 @@ import { onMounted, ref, computed } from 'vue'
 
   const reserve = async () => {
     const hostname = new URL(window.location.href).hostname
-    const url = `http://${hostname}:${process.env.VUE_APP_SERVERPORT}/reserve`
+    const url = `http://${hostname}:${process.env.SERVERPORT}/reserve`
     const date = new Date(chosenDate.value).toLocaleDateString();
 
     const payload = {

@@ -1,8 +1,10 @@
+require('dotenv').config()
+
 const express = require('express')
 const app = express()
 const path = require('path');
 const cors = require('cors')
-const port = process.env.VUE_APP_SERVERPORT || 3001
+const port = process.env.SERVERPORT
 const puppeteer = require('puppeteer')
 const crawls = require('./crawls')
 
@@ -52,13 +54,9 @@ const reservePadel = async (date, time, people, test) => {
     const { court: courtFirstBooking, time: timeFirstBooking, isPeak } = await repeatableSections(pass, page, time, people, test)
     const { court: courtSecondBooking, time: timeSecondBooking } = await repeatableSections(pass + 1, page, time, people, test, isPeak)
 
-    console.log(courtSecondBooking, timeSecondBooking)
-
     returnData.bookedCourt = `Booked Court(s): Court ${courtFirstBooking} ${courtSecondBooking ? ' and court' : ''} ${courtSecondBooking ? courtSecondBooking : ''}`
     returnData.bookedTime = `Booked Time(s): ${timeFirstBooking} ${timeSecondBooking ? 'and' : ''} ${timeSecondBooking ? timeSecondBooking : ''}`
     returnData.bookedDate = `Booked date: ${bookedDate}`
-
-    console.log(returnData)
     
     if (browser) {
       await browser.close();
