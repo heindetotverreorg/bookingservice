@@ -1,17 +1,43 @@
 <template>
   <h1>Reserveren padel</h1>
-  <p>people</p>
-  <ul>
-    <li v-for="person of people" :key="person">
-      {{ person }}
-    </li>
-  </ul>
-  <p>date and time: (default is every wednesday at {{ defaultTime }} )</p>
-  <input type="date" placeholder="date dd/mm/yyyy"/>
-  <input type="text" placeholder="time hh:mm"/>
-  <label for="1">check for test run</label><input type="checkbox" id="1" v-model="testValue" />
-  <p>chosen date/time {{ chosenDate }} - {{ defaultTime }}"</p>
-  <button @click="reserve">Reserveren</button>
+  <div>
+    <h3>people</h3>
+    <ul>
+      <li v-for="person of people" :key="person">
+        {{ person }}
+      </li>
+    </ul>
+  </div>
+  <div>
+    <h3>date and time: (default is every wednesday at {{ defaultTime }} )</h3>
+    <input type="date" :valueAsDate="chosenDate"/>
+    <label for="time-select">Choose a time:</label>
+    <select
+      name="time"
+      id="time-select"
+      v-model="defaultTime"
+    >
+      <option value="">--Please choose an option--</option>
+      <option
+        v-for="time of timeOptions()"
+        :key="time"
+        :selected="time === defaultTime"
+        :value="time"
+      >
+        {{ time }}
+      </option>
+    </select>
+  </div>
+  <div>
+    <p>chosen date/time {{ chosenDate }} - {{ defaultTime }}</p>
+  </div>
+  <div>
+    <label for="1">check for test run</label>
+    <input type="checkbox" id="1" v-model="testValue" />
+  </div>
+  <div>
+    <button @click="reserve">Reserveren</button>
+  </div>
   <p>{{ bookingResult }}</p>
 </template>
 
@@ -21,7 +47,7 @@ import { onMounted, ref } from 'vue'
 
   const bookingResult = ref({})
   const chosenDate = ref('')
-  const defaultTime = ref('18:00')
+  const defaultTime = ref('19:00')
   const testValue = ref(true)
 
   onMounted(() => {
@@ -30,7 +56,7 @@ import { onMounted, ref } from 'vue'
 
   const date = () => {
     const today = new Date();
-    today.setDate(today.getDate() + 2)
+    today.setDate(today.getDate() + 3)
     chosenDate.value = today.toLocaleDateString();
   }
 
@@ -40,6 +66,16 @@ import { onMounted, ref } from 'vue'
     'Ricky de Haan',
     'Matthias Poortvliet' 
   ]
+
+  const timeOptions = () => {
+    const arr = []
+    for (let i = 14; i < 46; i++) {
+      const hour = Math.floor(i / 2)
+      const minutes = i % 2 === 0 ? '00' : '30'
+      arr.push(`${hour}:${minutes}`)
+    }
+    return arr
+  }
 
   const reserve = async () => {
     const hostname = new URL(window.location.href).hostname

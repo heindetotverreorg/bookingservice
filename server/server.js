@@ -6,7 +6,7 @@ const port = process.env.VUE_APP_SERVERPORT || 3001
 const puppeteer = require('puppeteer')
 const crawls = require('./crawls')
 
-const { init, login, selectDate, selectSport, selectCourt, checkForBookingType, selectPeople, book } = crawls
+const { init, login, selectDate, selectSport, selectCourt, checkForBookingType, selectLongerTimeSlot, selectPeople, book } = crawls
 
 app.use(cors())
 app.use(express.json())
@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
 
 app.post('/reserve', async (req, res) => {
   const { date, time, people, test } = req.body
-  console.log(`payload: ${date} ${time} ${people} is test ${test}`)
+  console.log(`payload: ${date} ${time} ${people} | is test: ${test}`)
 
   const data = await reservePadel(date, time, people, test)
   res.send(data)
@@ -53,8 +53,8 @@ const reservePadel = async (date, time, people, test) => {
     const { court: courtFirstBooking, time: timeFirstBooking, isPeak } = await repeatableSections(pass, page, time, people, test)
     const { court: courtSecondBooking, time: timeSecondBooking } = await repeatableSections(pass + 1, page, time, people, test, isPeak)
 
-    returnData.bookedCourt = `Court: 1st booking: ${courtFirstBooking}, 2nd booking: ${courtSecondBooking}}`
-    returnData.bookedTime = `Time: 1st booking: ${timeFirstBooking}, 2nd booking: ${timeSecondBooking}}`
+    returnData.bookedCourt = `Court 1st booking: ${courtFirstBooking}, 2nd booking: ${courtSecondBooking ? courtSecondBooking : 'one court booked: no peak time'}}`
+    returnData.bookedTime = `Time 1st booking: ${timeFirstBooking}, 2nd booking: ${timeSecondBooking ? timeSecondBooking : 'single one hour booking: no peak time'}}`
     returnData.bookedDate = bookedDate
     
     if (browser) {
@@ -67,20 +67,18 @@ const reservePadel = async (date, time, people, test) => {
   }
 }
 
-const parseTimeAndAdd = (time) => {
+const parseTimeAndAdd = (time, timetoSet = 30) => {
   const [ hours, minutes ] = time.split(':')
   if (minutes === '00') {
-    return `${hours}:${parseInt(minutes + 30)}`
+    return `${hours}:${parseInt(minutes + timetoSet)}`
   }
-  return `${parseInt(hours) + 1}:${parseInt(minutes - 30)}`
+  return `${parseInt(hours) + 1}:${parseInt(minutes - timetoSet)}`
 }
 
 const repeatableSections = async (pass, page, time, people, test, isPreviousBookingPeak) => {
+  // bail when we are not in peak time and we run it second time
   if (pass !== 0 && !isPreviousBookingPeak) {
-    return {
-      court: '',
-      time: ''
-    }
+    return { }
   }
 
   if (pass > 0) {
@@ -90,6 +88,10 @@ const repeatableSections = async (pass, page, time, people, test, isPreviousBook
   const { court } = await selectCourt(page, time)
 
   const { isPeak } = await checkForBookingType(page) 
+
+  if (!isPeak) {
+    await selectLongerTimeSlot(page, time)
+  }
 
   await selectPeople(page, people)
 

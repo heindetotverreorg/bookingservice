@@ -34,7 +34,7 @@ const selectSport = async (page) => {
   await page.select('#matrix-sport', 'sport/1280')
 }
 
-const selectCourt = async (page, time, court = 1) => {
+const selectCourt = async (page, time, court = 4) => {
   try {
     const courtSelector = `tr[data-time="${time}"] [title="Padel Buiten ${court}"]`
     const selectedCourt = await page.waitForSelector(courtSelector);
@@ -46,10 +46,10 @@ const selectCourt = async (page, time, court = 1) => {
       court
     }
   } catch(error) {
-    if (court <= 4) {
-      return await selectCourt(page, time, court + 1)
+    if (court !== 0) {
+      return await selectCourt(page, time, court - 1)
     } else {
-      handleError({ message: 'error: couldnt book court for timeslot: ', body: time, error })
+      handleError({ message: `error: couldnt book court ${court} for timeslot: `, body: time, error })
     }
   }
 }
@@ -70,6 +70,28 @@ const checkForBookingType = async (page) => {
   } catch (error) {
     handleError({ message: 'error: check for booking type: ', body: '', error })
   }
+}
+
+const selectLongerTimeSlot = async (page) => {
+    try {
+      const selector = `select[name="end_time"]`
+
+      await page.waitForSelector(selector)
+
+      const options = await page.evaluate(({ selector }) => {
+        const selectEl = document.querySelector(selector)
+        if (selectEl) {
+          const options = [...selectEl.options]
+          return options.map(option => (option.text))
+        }
+      }, { selector })
+
+      const lastOption = options[options.length - 1]
+
+      await page.select(selector, lastOption)
+    } catch (error) {
+      handleError({ message: 'error: set longer time slot out of peak time: ', body: '', error })
+    }
 }
 
 const selectPeople = async (page, people) => {
@@ -149,6 +171,7 @@ const book = async (page, test = true) => {
       await page.click('#__make_cancel2')
       await delay(1000)
       await page.click('#__make_cancel')
+      await delay(1000)
     } else {
       await page.click('#__make_submit2')
     }
@@ -177,6 +200,7 @@ module.exports = {
   selectSport,
   selectCourt,
   checkForBookingType,
+  selectLongerTimeSlot,
   selectPeople,
   book
 }
