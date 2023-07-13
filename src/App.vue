@@ -109,6 +109,7 @@ import { onMounted, ref, computed } from 'vue'
     }
 
     try {
+      console.log(url)
       const { data } = await axios.post(url, payload)
       bookingResult.value = data
     } catch (error) {
