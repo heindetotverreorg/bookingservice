@@ -68,7 +68,7 @@ import { onMounted, ref, computed } from 'vue'
   const date = () => {
     const today = new Date();
     today.setDate(today.getDate() + 3)
-    chosenDate.value = today.toLocaleDateString();
+    chosenDate.value = today
   }
 
   const parsedResult = computed(() => {
@@ -99,9 +99,8 @@ import { onMounted, ref, computed } from 'vue'
 
   const reserve = async () => {
     const url = process.env.VUE_APP_BOOKING_URL
+    console.log(chosenDate.value)
     const date = new Date(chosenDate.value).toLocaleDateString();
-
-    console.log(process.env)
 
     const payload = {
       date: date,
