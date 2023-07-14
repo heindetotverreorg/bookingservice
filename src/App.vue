@@ -36,7 +36,7 @@
     </select>
   </div>
   <div>
-    <p>chosen date/time {{ chosenDate }} - {{ defaultTime }}</p>
+    <h2>chosen date/time {{ presentationDate }} - {{ defaultTime }}</h2>
   </div>
   <div>
     <label for="1">check for test run</label>
@@ -64,6 +64,10 @@ import { onMounted, ref, computed } from 'vue'
 
   onMounted(() => {
     date()
+  })
+
+  const presentationDate = computed(() => {
+    return new Date(chosenDate.value).toLocaleDateString();
   })
 
   const date = () => {

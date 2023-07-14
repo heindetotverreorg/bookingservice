@@ -1,4 +1,5 @@
 let browser = null
+const removeLeadingZeroRegex = new RegExp("^0+(?!$)",'g');
 
 const init = async (page, freshBrowser, url) => {
   browser = freshBrowser
@@ -15,11 +16,15 @@ const login = async (page) => {
   await page.click('.button3')
 }
 
-const selectDate = async (page, date) => {
-  const regex = new RegExp("^0+(?!$)",'g');
+const selectDate = async (page, date, pass = 0, reverse) => {
   try {
+    let selector = ''
     const [day, month, year] = date.split('/')
-    const selector = `#cal_${year}_${month.replaceAll(regex, '')}_${day}`
+    if (!reverse) {
+      selector = `#cal_${year}_${month.replaceAll(removeLeadingZeroRegex, '')}_${day.replaceAll(removeLeadingZeroRegex, '')}`
+    } else {
+      selector = `#cal_${year}_${day.replaceAll(removeLeadingZeroRegex, '')}_${month.replaceAll(removeLeadingZeroRegex, '')}`
+    }
     await page.waitForSelector(selector)
     page.click(`${selector} a`)
     await delay(1000)
@@ -27,7 +32,11 @@ const selectDate = async (page, date) => {
       bookedDate: `${day}/${month}/${year}`
     }
   } catch (error) {
-    handleError({ message: 'error: couldnt select date: ', body: date, error })
+    if (pass === 0) {
+      return selectDate(page, date, pass + 1, true)
+    } else {
+      handleError({ message: 'error: couldnt select date: ', body: date, error })
+    }
   }
 }
 
@@ -37,7 +46,7 @@ const selectSport = async (page) => {
 
 const selectCourt = async (page, time, court = 4) => {
   try {
-    const courtSelector = `tr[data-time="${time}"] [title="Padel Buiten ${court}"]`
+    const courtSelector = `tr[data-time="${time.replaceAll(removeLeadingZeroRegex, '')}"] [title="Padel Buiten ${court}"]`
     const selectedCourt = await page.waitForSelector(courtSelector);
     selectedCourt.click()
     
