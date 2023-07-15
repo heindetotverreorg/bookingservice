@@ -183,7 +183,11 @@ const book = async (page, test = true) => {
       await page.click('#__make_cancel')
       await delay(1000)
     } else {
+      console.log('REAL BOOKING = SUCCESS')
       await page.click('#__make_submit2')
+      await delay(1000)
+      await page.goBack()
+      await delay(1000)
     }
     
     return
