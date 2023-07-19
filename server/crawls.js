@@ -230,6 +230,7 @@ const delay = (time) => {
 }
 
 const handleError = (params) => {
+  console.log('ERROR')
   console.log(params)
   browser.close()
   throw `${params.message} ${params.body} ${params.error}`
