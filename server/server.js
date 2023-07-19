@@ -20,7 +20,6 @@ app.get('/', (req, res) => {
 
 app.post('/book', async (req, res) => {
   const { date, time, people, test } = req.body
-  // console.log(`payload: ${date} ${time} ${people} | is test: ${test}`)
   const data = await bookPadel(date, time, people, test)
   res.send(data)
 })
