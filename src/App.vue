@@ -11,43 +11,48 @@
     </ul>
   </div>
   <div>
-    <h4>PS: run script on sunday to auto book on wednesday, or select a date from datepicker</h4>
-    <label for="date-select">Choose a date:</label>
-    <input
-      type="date"
-      id="date-select"
-      v-model="chosenDate"
-    />
-    <label for="time-select">Choose a time:</label>
-    <select
-      name="time"
-      id="time-select"
-      v-model="defaultTime"
-    >
-      <option value="">--Please choose an option--</option>
-      <option
-        v-for="time of timeOptions()"
-        :key="time"
-        :selected="time === defaultTime"
-        :value="time"
-      >
-        {{ time }}
-      </option>
-    </select>
-  </div>
-  <div>
-    <h2>chosen date/time {{ presentationDate }} - {{ defaultTime }}</h2>
-  </div>
-  <div>
     <label for="1">check for test run</label>
     <input type="checkbox" id="1" v-model="testValue" />
   </div>
-  <div>
-    <button @click="reserve">Reserveren</button>
+  <div class="m-t-2">
+    <h2>run custom job:</h2>
+    <div>
+      <div>
+        <h3>chosen date/time {{ presentationDate }} - {{ defaultTime }}</h3>
+      </div>
+      <label for="date-select">Choose a date:</label>
+      <input
+        type="date"
+        id="date-select"
+        v-model="chosenDate"
+      />
+      <label for="time-select">Choose a time:</label>
+      <select
+        name="time"
+        id="time-select"
+        v-model="defaultTime"
+      >
+        <option value="">--Please choose an option--</option>
+        <option
+          v-for="time of timeOptions()"
+          :key="time"
+          :selected="time === defaultTime"
+          :value="time"
+        >
+          {{ time }}
+        </option>
+      </select>
+    </div>
+    <div class="m-t-1">
+      <button @click="reserve">Reserveren</button>
+    </div>
   </div>
-  <div>
-    <button @click="reserve({ schedule: 'set' })">Set scheduled job at sunday 00:00</button>
-    <button @click="reserve({ schedule: 'cancel' })">Cancel scheduled job</button>
+  <div class="m-t-2">
+    <h2>run scheduled job (is always set with default date/time: every wednesday at 19:00)</h2>
+    <div>
+      <button @click="reserve({ schedule: 'set' })">Set scheduled job at sunday 00:00</button>
+      <button @click="reserve({ schedule: 'cancel' })">Cancel scheduled job</button>
+    </div>
   </div>
   <p v-if="isLoading">LOADING ....</p>
   <p v-if="!parsedResult">{{ bookingResult }}</p>
@@ -63,7 +68,7 @@ import { onMounted, ref, computed } from 'vue'
   const bookingResult = ref({})
   const chosenDate = ref('')
   const defaultTime = ref('19:00')
-  const testValue = ref(true)
+  const testValue = ref(false)
   const isLoading = ref(false)
 
   onMounted(() => {
@@ -128,3 +133,12 @@ import { onMounted, ref, computed } from 'vue'
     }
   }
 </script>
+<style scoped>
+.m-t-1 {
+  margin-top: 20px;
+}
+
+.m-t-2 {
+  margin-top: 60px;
+}
+</style>
