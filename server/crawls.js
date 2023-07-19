@@ -190,7 +190,7 @@ const book = async (page, test = true) => {
       await dialog.dismiss();
     })
     // important to actually close the dialog (if its present) or the worker wont shut down properly, so we delay a bit
-    await delay(2000)
+    await delay(1000)
 
     const els = await page.evaluate(() => {
       const matches = document.querySelectorAll('th')
@@ -198,6 +198,9 @@ const book = async (page, test = true) => {
     })
 
     const isConfirmModalVisible = !!els.find(el => el.text.includes('Bevestig uw reservering'))
+
+    // important to actually close wait for detecting of confirmDialog because on prod it doesnt always await the evaluate statement
+    await delay(1000)
 
     if (!isConfirmModalVisible) {
       throw 'An error occurred while booking, confirm window not visible, check for double booking'
