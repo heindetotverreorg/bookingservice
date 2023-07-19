@@ -41,12 +41,18 @@ const selectDate = async (page, date, pass = 0, reverse) => {
 }
 
 const selectSport = async (page) => {
-  await page.select('#matrix-sport', 'sport/1280')
+  try {
+    await page.select('#matrix-sport', 'sport/1280')
+  } catch (error) {
+    handleError({ message: `error: couldnt select sport from dropdown: `, body: '', error })
+  }
 }
 
 const selectCourt = async (page, time, court = 4) => {
+  const [hours, minutes] = time.split(':')
+  const newtime = hours.length === 1 ? `0${hours}:${minutes}` : `${hours}:${minutes}`
   try {
-    const courtSelector = `tr[data-time="${time.replaceAll(removeLeadingZeroRegex, '')}"] [title="Padel Buiten ${court}"]`
+    const courtSelector = `tr[data-time="${newtime}"] [title="Padel Buiten ${court}"]`
     const selectedCourt = await page.waitForSelector(courtSelector);
     selectedCourt.click()
     
@@ -102,6 +108,27 @@ const selectLongerTimeSlot = async (page) => {
     } catch (error) {
       handleError({ message: 'error: set longer time slot out of peak time: ', body: '', error })
     }
+}
+
+const getEndTime = async (page) => {
+  try {
+    const selector = `select[name="end_time"]`
+
+    await page.waitForSelector(selector)
+
+    const endTimeValue = await page.evaluate(({ selector }) => {
+      const selectEl = document.querySelector(selector)
+      if (selectEl) {
+        const value = selectEl.value
+        return value
+      }
+    }, { selector })
+
+    return { endtime: endTimeValue }
+    
+  } catch (error) {
+    handleError({ message: 'error: couldnt fetch end time: ', body: '', error })
+  }
 }
 
 const selectPeople = async (page, people) => {
@@ -215,6 +242,7 @@ module.exports = {
   selectCourt,
   checkForBookingType,
   selectLongerTimeSlot,
+  getEndTime,
   selectPeople,
   book
 }
