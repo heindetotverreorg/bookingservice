@@ -45,6 +45,10 @@
   <div>
     <button @click="reserve">Reserveren</button>
   </div>
+  <div>
+    <button @click="reserve({ schedule: 'set' })">Set scheduled job at sunday 00:00</button>
+    <button @click="reserve({ schedule: 'cancel' })">Cancel scheduled job</button>
+  </div>
   <p v-if="isLoading">LOADING ....</p>
   <p v-if="!parsedResult">{{ bookingResult }}</p>
   <div v-else>
@@ -102,9 +106,9 @@ import { onMounted, ref, computed } from 'vue'
     return arr
   }
 
-  const reserve = async () => {
-    const url = process.env.VUE_APP_BOOKING_URL
-    console.log(url, chosenDate.value)
+  const reserve = async ({ schedule }) => {
+    bookingResult.value = {}
+    const url = `${process.env.VUE_APP_BOOKING_URL}${schedule === 'set' ? '-start-scheduled-booking' : ''}${schedule === 'cancel' ? '-stop-scheduled-booking' : ''}`
     const date = new Date(chosenDate.value).toLocaleDateString();
 
     const payload = {
@@ -120,7 +124,6 @@ import { onMounted, ref, computed } from 'vue'
       bookingResult.value = data
       isLoading.value = false
     } catch (error) {
-      console.log(error)
       isLoading.value = false
     }
   }

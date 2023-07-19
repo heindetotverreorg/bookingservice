@@ -3,6 +3,7 @@ const puppeteer = require('puppeteer')
 const { init, login, selectDate, selectSport, selectCourt, checkForBookingType, selectLongerTimeSlot, getEndTime, selectPeople, book } = require('./crawls')
 
 const bookPadel = async (date, time, people, test) => {
+    console.log(`PAYLOAD: ${date}, ${time}, ${people}, test is ${test ? 'enabled' : 'disabled'}`)
     const returnData = {}
     const url = 'https://bent.baanreserveren.nl/reservations';
     let pass = 0
@@ -43,7 +44,6 @@ const bookPadel = async (date, time, people, test) => {
   
       return returnData
     } catch (error) {
-      console.log(error)
       return error
     }
   }

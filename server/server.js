@@ -24,17 +24,17 @@ app.post('/book', async (req, res) => {
   res.send(data)
 })
 
-app.post('/start-scheduled-booking', async (req, res) => {
+app.post('/book-start-scheduled-booking', async (req, res) => {
   const { date, time, people, test } = req.body
   const data = await startJob(date, time, people, test)
   res.send(data)
 })
 
-app.post('/stop-scheduled-booking', async (req, res) => {
-  await cancelJob()
-  res.send('stopped')
+app.post('/book-stop-scheduled-booking', async (req, res) => {
+  const data = await cancelJob()
+  res.send(data)
 })
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`App listening on port ${port}`)
 })
