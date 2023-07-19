@@ -27,11 +27,20 @@ const bookPadel = async (date, time, people, test) => {
 
       await selectSport(page)
   
-      const { court: courtFirstBooking, time: timeFirstBooking, endtime: firstEndtime, isPeak } = await repeatableBookingSections(pass, page, time, people, test)
+      const {
+        court: courtFirstBooking,
+        time: timeFirstBooking,
+        endtime: firstEndtime,
+        isPeak
+      } = await repeatableBookingSections(pass, page, time, people, test)
 
       await selectDate(page, date)
 
-      const { court: courtSecondBooking, time: timeSecondBooking, endtime: secondEndTime } = await repeatableBookingSections(pass + 1, page, time, people, test, isPeak)
+      const {
+        court: courtSecondBooking,
+        time: timeSecondBooking,
+        endtime: secondEndTime
+      } = await repeatableBookingSections(pass + 1, page, time, people, test, isPeak)
   
       returnData.bookedCourt = `Booked Court(s): Court ${courtFirstBooking} ${courtSecondBooking ? ' and court' : ''} ${courtSecondBooking ? courtSecondBooking : ''}`
       returnData.bookedTime = `Booked Time(s): ${timeFirstBooking} ${timeSecondBooking ? 'and' : ''} ${timeSecondBooking ? timeSecondBooking : ''}`

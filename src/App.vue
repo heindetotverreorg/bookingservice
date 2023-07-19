@@ -60,10 +60,12 @@
       <button @click="reserve({ schedule: 'cancel' })">Cancel scheduled job</button>
     </div>
   </div>
-  <p v-if="isLoading">LOADING ....</p>
-  <p class="red" v-if="!parsedResult">{{ bookingResult }}</p>
-  <div v-else>
-    <h2 v-for="line of parsedResult" :key="line">{{ line }}</h2>
+  <div>
+    <p v-if="isLoading">LOADING ....</p>
+    <p class="red" v-if="!parsedResult">{{ bookingResult }}</p>
+    <div v-else>
+      <h2 v-for="line of parsedResult" :key="line">{{ line }}</h2>
+    </div>
   </div>
 </template>
 
@@ -74,7 +76,7 @@ import { onMounted, ref, computed } from 'vue'
   const bookingResult = ref(null)
   const chosenDate = ref('')
   const defaultTime = ref('19:00')
-  const testValue = ref(false)
+  const testValue = ref(true)
   const isLoading = ref(false)
 
   onMounted(() => {
@@ -92,6 +94,10 @@ import { onMounted, ref, computed } from 'vue'
   }
 
   const parsedResult = computed(() => {
+    if (bookingResult.value === null) {
+      return null
+    }
+
     if (typeof bookingResult.value !== 'string' && Object.values(bookingResult.value).length) {
       return Object.values(bookingResult.value)
     }
