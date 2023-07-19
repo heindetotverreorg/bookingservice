@@ -104,7 +104,7 @@ import { onMounted, ref, computed } from 'vue'
 
   const reserve = async () => {
     const url = process.env.VUE_APP_BOOKING_URL
-    console.log(chosenDate.value)
+    console.log(url, chosenDate.value)
     const date = new Date(chosenDate.value).toLocaleDateString();
 
     const payload = {
