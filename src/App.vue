@@ -124,7 +124,7 @@ import { onMounted, ref, computed } from 'vue'
   }
 
   const reserve = async ({ schedule }) => {
-    bookingResult.value = {}
+    bookingResult.value = null
     const url = `${process.env.VUE_APP_BOOKING_URL}${schedule === 'set' ? '-start-scheduled-booking' : ''}${schedule === 'cancel' ? '-stop-scheduled-booking' : ''}`
     const date = new Date(chosenDate.value).toLocaleDateString();
 
