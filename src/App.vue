@@ -17,38 +17,44 @@
   <div class="m-t-2">
     <h2>run custom job:</h2>
     <div>
-      <div>
-        <h3>chosen date/time {{ presentationDate }} - {{ defaultTime }}</h3>
+      <div class="inline">
+        <p>chosen date/time</p><h3> {{ presentationDate }} - {{ defaultTime }}</h3>
       </div>
-      <label for="date-select">Choose a date:</label>
-      <input
-        type="date"
-        id="date-select"
-        v-model="chosenDate"
-      />
-      <label for="time-select">Choose a time:</label>
-      <select
-        name="time"
-        id="time-select"
-        v-model="defaultTime"
-      >
-        <option value="">--Please choose an option--</option>
-        <option
-          v-for="time of timeOptions()"
-          :key="time"
-          :selected="time === defaultTime"
-          :value="time"
+      <div>
+        <label for="date-select">Choose a date:</label>
+        <input
+          type="date"
+          id="date-select"
+          v-model="chosenDate"
+        />
+      </div>
+      <div>
+        <label for="time-select">Choose a time:</label>
+        <select
+          name="time"
+          id="time-select"
+          v-model="defaultTime"
         >
-          {{ time }}
-        </option>
-      </select>
+          <option value="">--Please choose an option--</option>
+          <option
+            v-for="time of timeOptions()"
+            :key="time"
+            :selected="time === defaultTime"
+            :value="time"
+          >
+            {{ time }}
+          </option>
+        </select>
+      </div>
     </div>
     <div class="m-t-1">
       <button @click="reserve">Reserveren</button>
     </div>
   </div>
   <div class="m-t-2">
-    <h2>run scheduled job (is always set with default date/time: every wednesday at 19:00)</h2>
+    <div class="inline">
+      <h2>run scheduled job</h2><p>(is always set with default date/time: every wednesday at 19:00)</p>
+    </div>
     <div>
       <button @click="reserve({ schedule: 'set' })">Set scheduled job at sunday 00:00</button>
       <button @click="reserve({ schedule: 'cancel' })">Cancel scheduled job</button>
@@ -140,5 +146,9 @@ import { onMounted, ref, computed } from 'vue'
 
 .m-t-2 {
   margin-top: 60px;
+}
+
+.inline {
+  display: inline
 }
 </style>

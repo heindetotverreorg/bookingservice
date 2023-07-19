@@ -44,7 +44,7 @@ const cancelJob = () => {
         }
     } else {
         return {
-            message: `Scheduled cron job is running to cancel`
+            message: `No scheduled job is running to cancel`
         }
     }
 }
