@@ -184,13 +184,15 @@ const selectPeople = async (page, people) => {
 
 const book = async (page, test = true) => {
   try {
-    await page.click('#__make_submit')
-
+    // set event listener for dialog
     page.on('dialog', async dialog => {
       if (dialog) {
         await dialog.dismiss();
       }
     })
+
+    await page.click('#__make_submit')
+
     // important to actually close the dialog (if its present) or the worker wont shut down properly, so we delay a bit
     await delay(1000)
 
@@ -201,7 +203,7 @@ const book = async (page, test = true) => {
 
     const isConfirmModalVisible = !!els.find(el => el.text.includes('Bevestig uw reservering'))
 
-    // important to actually close wait for detecting of confirmDialog because on prod it doesnt always await the evaluate statement
+    // important to actually wait for detecting of confirmDialog because on prod it doesnt always await the evaluate statement
     await delay(1000)
 
     if (!isConfirmModalVisible) {
