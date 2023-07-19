@@ -1,6 +1,6 @@
 {
-  "name": "reservepadel",
-  "version": "0.1.0",
+  "name": "bookpadel",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

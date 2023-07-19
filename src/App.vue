@@ -14,7 +14,7 @@
     <label for="1">check for test run</label>
     <input type="checkbox" id="1" v-model="testValue" />
   </div>
-  <div class="m-t-2">
+  <div class="m-t-1">
     <h2>run custom job:</h2>
     <div>
       <div class="inline">
@@ -51,7 +51,7 @@
       <button @click="reserve">Reserveren</button>
     </div>
   </div>
-  <div class="m-t-2">
+  <div class="m-t-1">
     <div class="inline">
       <h2>run scheduled job</h2><p>(is always set with default date/time: every wednesday at 19:00)</p>
     </div>
@@ -61,7 +61,7 @@
     </div>
   </div>
   <p v-if="isLoading">LOADING ....</p>
-  <p v-if="!parsedResult">{{ bookingResult }}</p>
+  <p class="red" v-if="!parsedResult">{{ bookingResult }}</p>
   <div v-else>
     <h2 v-for="line of parsedResult" :key="line">{{ line }}</h2>
   </div>
@@ -71,7 +71,7 @@
 import axios from 'axios'
 import { onMounted, ref, computed } from 'vue'
 
-  const bookingResult = ref({})
+  const bookingResult = ref(null)
   const chosenDate = ref('')
   const defaultTime = ref('19:00')
   const testValue = ref(false)
@@ -150,5 +150,9 @@ import { onMounted, ref, computed } from 'vue'
 
 .inline {
   display: inline
+}
+
+.red {
+  color: red;
 }
 </style>
