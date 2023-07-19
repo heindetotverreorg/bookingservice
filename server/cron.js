@@ -10,7 +10,13 @@ const setTask = (newTask) => {
 const startJob = (date, time, people, test) => {
     const defaultCronValue = process.env.NODE_ENV === 'production' ? '0 0 * * 0' : '* * * * *'
 
+    // date at initialisation
+    const today = new Date();
+    const newDate = today.setDate(today.getDate() + 3)
+    const newDateFormatted = new Date(newDate).toLocaleDateString();
+
     const newTask = cron.schedule(defaultCronValue, () =>  {
+        // date within task context
         const today = new Date();
         const newDate = today.setDate(today.getDate() + 3)
         const newDateFormatted = new Date(newDate).toLocaleDateString();
@@ -21,7 +27,7 @@ const startJob = (date, time, people, test) => {
       
     task.start();
 
-    const message = `Cron job has started for every sunday at 00:00 (${defaultCronValue}) with booking data: Runtime + 3 days at ${time}`
+    const message = `Scheduled job has started for every sunday at 00:00 (${defaultCronValue}) with booking data: ${newDateFormatted} at ${time}`
 
     return {
         message
@@ -34,11 +40,11 @@ const cancelJob = () => {
         task = null
 
         return {
-            message: `Cron job has cancelled`
+            message: `Scheduled job has cancelled`
         }
     } else {
         return {
-            message: `No cron job is running to cancel`
+            message: `Scheduled cron job is running to cancel`
         }
     }
 }
