@@ -26,7 +26,7 @@ const selectDate = async (page, date, pass = 0, reverse) => {
       selector = `#cal_${year}_${day.replaceAll(removeLeadingZeroRegex, '')}_${month.replaceAll(removeLeadingZeroRegex, '')}`
     }
     await page.waitForSelector(selector)
-    page.click(`${selector} a`)
+    await page.click(`${selector} a`)
     await delay(1000)
     return {
       bookedDate: `${day}/${month}/${year}`
@@ -54,7 +54,7 @@ const selectCourt = async (page, time, court = 4) => {
   try {
     const courtSelector = `tr[data-time="${newtime}"] [title="Padel Buiten ${court}"]`
     const selectedCourt = await page.waitForSelector(courtSelector);
-    selectedCourt.click()
+    await selectedCourt.click()
     
     await page.waitForSelector('.lightbox')
 
@@ -184,10 +184,12 @@ const selectPeople = async (page, people) => {
 
 const book = async (page, test = true) => {
   try {
-    page.click('#__make_submit')
+    await page.click('#__make_submit')
 
     page.on('dialog', async dialog => {
-      await dialog.dismiss();
+      if (dialog) {
+        await dialog.dismiss();
+      }
     })
     // important to actually close the dialog (if its present) or the worker wont shut down properly, so we delay a bit
     await delay(1000)
