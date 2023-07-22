@@ -29,6 +29,8 @@ const startJob = (date, time, people, test) => {
 
     const message = `Scheduled job has started for every sunday at 00:00 (${defaultCronValue}) with booking data: ${newDateFormatted} at ${time}`
 
+    console.log(message)
+
     return {
         message
     }
