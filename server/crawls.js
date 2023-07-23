@@ -16,6 +16,14 @@ const login = async (page) => {
   await page.click('.button3')
 }
 
+const selectSport = async (page) => {
+  try {
+    await page.select('#matrix-sport', 'sport/1280')
+  } catch (error) {
+    handleError({ message: `error: couldnt select sport from dropdown: `, body: '', error })
+  }
+}
+
 const selectDate = async (page, date, pass = 0, reverse) => {
   try {
     let selector = ''
@@ -40,30 +48,33 @@ const selectDate = async (page, date, pass = 0, reverse) => {
   }
 }
 
-const selectSport = async (page) => {
-  try {
-    await page.select('#matrix-sport', 'sport/1280')
-  } catch (error) {
-    handleError({ message: `error: couldnt select sport from dropdown: `, body: '', error })
-  }
-}
-
-const selectCourt = async (page, time, court = 4) => {
+const selectCourtAndTime = async (page, time, pass, court = 4) => {
   const [hours, minutes] = time.split(':')
-  const newtime = hours.length === 1 ? `0${hours}:${minutes}` : `${hours}:${minutes}`
+  let newtime = hours.length === 1 ? `0${hours}:${minutes}` : `${hours}:${minutes}`
   try {
     const courtSelector = `tr[data-time="${newtime}"] [title="Padel Buiten ${court}"]`
     const selectedCourt = await page.waitForSelector(courtSelector);
-    await selectedCourt.click()
-    
+
+    // try and select a second timeslot to ensure full hour availablity
+    newtime = parseTimeAndAdd(time)
+    const courtSelectorExtraHalfHour = `tr[data-time="${newtime}"] [title="Padel Buiten ${court}"]`
+    const selectedCourtExtraHalfHour =  await page.waitForSelector(courtSelectorExtraHalfHour);
+    await selectedCourtExtraHalfHour.click()
     await page.waitForSelector('.lightbox')
+    await page.click('#__make_cancel')
+
+    await selectedCourt.click()
+    await page.waitForSelector('.lightbox')
+
+    await selectLongerTimeSlot(page)
 
     return {
       court
     }
   } catch(error) {
     if (court !== 0) {
-      return await selectCourt(page, time, court - 1)
+      console.log(error)
+      return await selectCourtAndTime(page, time, pass, court - 1)
     } else {
       handleError({ message: `error: couldnt book court ${court} for timeslot: `, body: time, error })
     }
@@ -243,15 +254,29 @@ const handleError = (params) => {
   throw `${params.message} ${params.body} ${params.error}`
 }
 
+const parseTimeAndAdd = (time, addOneHour) => {
+  const minutesToAdd = 30
+  const [ hours, minutes ] = time.split(':')
+  if (addOneHour) {
+    return `${parseInt(hours) + 1}:${minutes}`
+  }
+  if (minutes === '00') {
+    return `${hours}:${parseInt(minutes + minutesToAdd)}`
+  }
+  return `${parseInt(hours) + 1}:${parseInt(minutes - minutesToAdd)}0`
+}
+
+
 module.exports = {
   init,
   login,
   selectDate,
   selectSport,
-  selectCourt,
+  selectCourtAndTime,
   checkForBookingType,
   selectLongerTimeSlot,
   getEndTime,
   selectPeople,
-  book
+  book,
+  parseTimeAndAdd
 }
