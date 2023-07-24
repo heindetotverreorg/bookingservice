@@ -12,7 +12,7 @@ npm start | this will start the server and server the FE in prod mdoe
 
 ### For dev on local
 ```
-npm start and npm server | this will start the server and run the FE in a seperate process in dev mode
+npm start and npm serve | this will start the server and run the FE in a seperate process in dev mode
 ```
 
 ### what is this anyway
