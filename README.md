@@ -7,12 +7,12 @@ npm install | yarn wont run on the server so we need a package-lock.json instead
 
 ### For prod on local
 ```
-npm start | this will start the server and server the FE in prod mdoe
+npm run start | this will start the server and server the FE in prod mdoe
 ```
 
 ### For dev on local
 ```
-npm start and npm serve | this will start the server and run the FE in a seperate process in dev mode
+npm run start and npm run serve | this will start the server and run the FE in a seperate process in dev mode
 ```
 
 ### what is this anyway
