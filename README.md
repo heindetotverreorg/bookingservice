@@ -2,7 +2,7 @@
 
 ## Project setup
 ```
-npm install | yarn wont run on the server so we need a package-lock instead.json of a yarn.lock
+npm install | yarn wont run on the server so we need a package-lock.json instead of a yarn.lock
 ```
 
 ### For prod on local
