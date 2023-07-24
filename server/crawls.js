@@ -8,12 +8,19 @@ const init = async (page, freshBrowser, url) => {
 }
 
 const login = async (page) => {
-  await page.waitForSelector('input[name="username"]')
-  await page.evaluate(() => {
-    document.querySelector('input[name="username"]').value = 'mpoortvliet8570';
-    document.querySelector('input[name="password"]').value = '10*Matthias';
-  })
-  await page.click('.button3')
+  const login = 'mpoortvliet8570'
+  const pw = '10*Matthias'
+  try {
+    await page.waitForSelector('input[name="username"]')
+    await page.evaluate((login, pw) => {
+      document.querySelector('input[name="username"]').value = login;
+      document.querySelector('input[name="password"]').value = pw;
+    }, login, pw)
+    await page.click('.button3')
+    await page.waitForNavigation()
+  } catch(error) {
+    handleError({ message: `error: couldnt login with info: `, body: `${login} ${pw}`, error })
+  }
 }
 
 const selectSport = async (page) => {

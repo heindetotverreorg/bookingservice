@@ -61,7 +61,9 @@ const bookPadel = async (date, time, people, test) => {
   const selectCourtTimePeopleAndConfirm = async (pass, page, time, people, test, isPreviousBookingPeak) => {
     if (isPreviousBookingPeak || pass > 1) {
       return {}
-    } else {
+    }
+
+    if (pass > 0) {
       time = parseTimeAndAdd(time, true)
     }
 

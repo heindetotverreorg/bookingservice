@@ -2,23 +2,20 @@
 
 ## Project setup
 ```
-yarn install
+npm install | yarn wont run on the server so we need a package-lock instead.json of a yarn.lock
 ```
 
-### Compiles and hot-reloads for development
+### For prod on local
 ```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
+npm start | this will start the server and server the FE in prod mdoe
 ```
 
-### Lints and fixes files
+### For dev on local
 ```
-yarn lint
+npm start and npm server | this will start the server and run the FE in a seperate process in dev mode
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### what is this anyway
+```
+This is a simple FE built around a node js server that uses puppeteer to login to a sports booking platform and when logged in book certain padel courts. It's goal is to run automagically on 00:00 every sunday so I dont have to get out of bed to book padel for me and my mates. It can also be used custom with set dates/times because the techniques are there anyway
+```
