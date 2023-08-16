@@ -53,7 +53,7 @@
   </div>
   <div class="m-t-1">
     <div class="inline">
-      <h2>run scheduled job</h2><p>(default date/time: every wednesday at 19:00, or custom time from above)</p>
+      <h2>run scheduled job</h2><p>(default date/time: three days from now at 19:00, or custom date/time from above)</p>
     </div>
     <div>
       <button @click="reserve({ schedule: 'set' })">Set scheduled job at sunday 00:00</button>
