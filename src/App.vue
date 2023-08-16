@@ -15,7 +15,6 @@
     <input type="checkbox" id="1" v-model="testValue" />
   </div>
   <div class="m-t-1">
-    <h2>run custom job:</h2>
     <div>
       <div class="inline">
         <p>chosen date/time</p><h3> {{ presentationDate }} - {{ defaultTime }}</h3>
@@ -47,13 +46,14 @@
         </select>
       </div>
     </div>
+    <h2>run custom job:</h2>
     <div class="m-t-1">
       <button @click="reserve">Reserveren</button>
     </div>
   </div>
   <div class="m-t-1">
     <div class="inline">
-      <h2>run scheduled job</h2><p>(is always set with default date/time: every wednesday at 19:00)</p>
+      <h2>run scheduled job</h2><p>(default date/time: every wednesday at 19:00, or custom time from above)</p>
     </div>
     <div>
       <button @click="reserve({ schedule: 'set' })">Set scheduled job at sunday 00:00</button>
