@@ -1,9 +1,7 @@
 <template>
   <h1>Reserveren padel</h1>
   <div>
-    <h3>Bookee</h3>
-    <p>{{ bookee }}</p>
-    <h3>people</h3>
+    <h3>accounts</h3>
     <ul>
       <li v-for="person of people" :key="person">
         {{ person }}
@@ -11,16 +9,13 @@
     </ul>
   </div>
   <div>
-    <label for="1">check for test run</label>
+    <label for="1">IS TEST</label>
     <input type="checkbox" id="1" v-model="testValue" />
   </div>
   <div class="m-t-1">
     <div>
-      <div class="inline">
-        <p>chosen date/time</p><h3> {{ presentationDate }} - {{ defaultTime }}</h3>
-      </div>
       <div>
-        <label for="date-select">Choose a date:</label>
+        <label for="date-select">Dag:</label>
         <input
           type="date"
           id="date-select"
@@ -28,7 +23,7 @@
         />
       </div>
       <div>
-        <label for="time-select">Choose a time:</label>
+        <label for="time-select">Tijd:</label>
         <select
           name="time"
           id="time-select"
@@ -46,18 +41,20 @@
         </select>
       </div>
     </div>
-    <h2>run custom job:</h2>
+    <h2>Direct reserveren om {{ presentationDate }} - {{ defaultTime }}:</h2>
     <div class="m-t-1">
       <button @click="reserve">Reserveren</button>
     </div>
   </div>
   <div class="m-t-1">
     <div class="inline">
-      <h2>run scheduled job</h2><p>(default date/time: three days from now at 19:00, or custom date/time from above)</p>
+      <h2>Gepland reserveren {{ presentationDate }} - {{ defaultTime }}</h2>
     </div>
     <div>
-      <button @click="reserve({ schedule: 'set' })">Set scheduled job at sunday 00:00</button>
-      <button @click="reserve({ schedule: 'cancel' })">Cancel scheduled job</button>
+      <button @click="reserve({ schedule: 'set' })">Zet geplande reservering aan</button>
+    </div>
+    <div class="m-t-1">
+      <button @click="reserve({ schedule: 'cancel' })">Annuleer geplande reservering</button>
     </div>
   </div>
   <div>
@@ -110,8 +107,6 @@ import { onMounted, ref, computed } from 'vue'
     'Ricky de Haan',
     'Matthias Poortvliet' 
   ]
-
-  const bookee = 'Matthias Poortvliet'
 
   const timeOptions = () => {
     const arr = []

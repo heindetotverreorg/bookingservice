@@ -2,7 +2,10 @@ const puppeteer = require('puppeteer')
 
 const { init, login, selectDate, selectSport, selectCourtAndTime, checkForBookingType, getEndTime, selectPeople, book, parseTimeAndAdd } = require('./crawls')
 
-const bookPadel = async (date, time, people, test) => {
+const bookPadel = async (date, time, people, test, cron = false) => {
+    if (cron) {
+      console.log('SRTARTED FROM CRON JPB')
+    }
     console.log(`PAYLOAD: ${date}, ${time}, ${people}, test is ${test ? 'enabled' : 'disabled'}`)
     const returnData = {}
     const url = 'https://bent.baanreserveren.nl/reservations';

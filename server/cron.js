@@ -1,4 +1,5 @@
 const cron = require('node-cron');
+const moment = require('moment');
 const { bookPadel } = require('./book')
 
 let task
@@ -8,26 +9,36 @@ const setTask = (newTask) => {
 }
 
 const startJob = (date, time, people, test) => {
-    const defaultCronValue = process.env.NODE_ENV === 'production' ? '0 0 * * 0' : '* * * * *'
-
-    // date at initialisation
-    const today = new Date();
-    const newDate = today.setDate(today.getDate() + 3)
+    // 3 days before booking date
+    const usableDate = new Date(date)
+    const newDate = usableDate.setDate(usableDate.getDate() -3)
     const newDateFormatted = new Date(newDate).toLocaleDateString();
+    const cronValue = dateTimeToCron(newDateFormatted)
 
-    const newTask = cron.schedule(defaultCronValue, () =>  {
-        // date within task context
-        const today = new Date();
-        const newDate = today.setDate(today.getDate() + 3)
-        const newDateFormatted = new Date(newDate).toLocaleDateString();
-        bookPadel(newDateFormatted, time, people, test)
+    console.log('BOOKING DATE: ', date)
+    console.log('3 DAYS BEFORE BOOK DATE: ', newDateFormatted)
+    console.log('CRON VALUE (START OF THE JOB): ', dateTimeToCron(newDateFormatted))
+
+    const testCronValue = '*/5 * * * *' // every 5 minutes
+
+    if (test) {
+        console.log(`THIS IS A TEST RUN: CRON VALUE FOR EVERY ${testCronValue}`)
+    }
+
+    const newTask = cron.schedule(test ? testCronValue : cronValue, async () =>  {
+        console.log('STARTING CRON JOB')
+        const newDateFormatted = new Date(date).toLocaleDateString();
+        console.log(date)
+        console.log(bookPadel, newDateFormatted, time, people, test, true)
+        await bookPadel(newDateFormatted, time, people, test, true)
+        cancelJob()
     });
 
     setTask(newTask)
       
     task.start();
 
-    const message = `Scheduled job has started for every sunday at 00:00 (${defaultCronValue}) with booking data: ${newDateFormatted} at ${time}`
+    const message = `Scheduled job has started for (${cronToDateTime(cronValue)}) with booking data: ${date} at ${time}`
 
     console.log(message)
 
@@ -37,18 +48,38 @@ const startJob = (date, time, people, test) => {
 }
 
 const cancelJob = () => {
+    let message 
     if (task) {
         task.stop();
         task = null
 
-        return {
-            message: `Scheduled job has cancelled`
-        }
+        message = `Scheduled job has cancelled`
     } else {
-        return {
-            message: `No scheduled job is running to cancel`
-        }
+        message = `No scheduled job is running to cancel`
     }
+
+    console.log(message)
+    return message
+}
+
+const dateTimeToCron = (dateTime) => {
+  const formattedDate = new Date(dateTime).toISOString()
+  const m = moment(formattedDate);
+  const cronExpression = `${m.seconds()} ${m.minutes()} ${m.hours()} ${m.date()} ${m.month() + 1} ${m.day()}`;
+  return cronExpression;
+}
+
+const cronToDateTime = (cronExpression) => {
+  const cronArray = cronExpression.split(' ');
+  const dateTime = moment()
+    .seconds(cronArray[0])
+    .minutes(cronArray[1])
+    .hours(cronArray[2])
+    .date(cronArray[3])
+    .month(cronArray[4] - 1)
+    .day(cronArray[5]);
+
+  return dateTime.format();
 }
 
 module.exports = {

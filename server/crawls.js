@@ -17,7 +17,7 @@ const login = async (page) => {
       document.querySelector('input[name="password"]').value = pw;
     }, login, pw)
     await page.click('.button3')
-    await page.waitForNavigation()
+    await delay(1000)
   } catch(error) {
     handleError({ message: `error: couldnt login with info: `, body: `${login} ${pw}`, error })
   }
