@@ -3,6 +3,11 @@ const moment = require('moment');
 const { bookPadel } = require('./book')
 const  { delay } = require('./crawls')
 
+
+Date.prototype.isValid = function () {
+    return this.getTime() === this.getTime();
+};  
+
 let task
 
 const setTask = (newTask) => {
@@ -10,8 +15,16 @@ const setTask = (newTask) => {
 }
 
 const startJob = (date, time, people, test) => {
+    if (date.includes('-')) {
+        date = date.replaceAll('-', '/')
+    }
     // 3 days before booking date
-    const usableDate = new Date(date)
+    let usableDate = new Date(date)
+    if (!usableDate.isValid()) {
+        const [day, month, year] = date.split('/')
+        date = `${month}/${day}/${year}`
+        usableDate = new Date(date)
+    }
     const newDate = usableDate.setDate(usableDate.getDate() -3)
     const newDateFormatted = new Date(newDate).toDateString();
     const cronValue = dateTimeToCron(newDateFormatted)
@@ -21,7 +34,7 @@ const startJob = (date, time, people, test) => {
     console.log('3 DAYS BEFORE BOOK DATE: ', newDateFormatted)
     console.log('CRON VALUE (START OF THE JOB): ', dateTimeToCron(newDateFormatted))
 
-    const testCronValue = '*/5 * * * *' // every 5 minutes
+    const testCronValue = '*/1 * * * *' // every 5 minutes
 
     if (test) {
         console.log(`THIS IS A TEST RUN: CRON VALUE FOR EVERY ${testCronValue}`)
@@ -31,8 +44,7 @@ const startJob = (date, time, people, test) => {
         console.log('STARTING CRON JOB')
         console.log(`timeout ${30000} milliseconds`)
         await delay(30000)
-        const newDateFormatted = new Date(date).toLocaleDateString();
-        await bookPadel(newDateFormatted, time, people, test, true)
+        await bookPadel(date, time, people, test, true)
         cancelJob()
     });
 
