@@ -11,12 +11,9 @@ const setTask = (newTask) => {
 
 const startJob = (date, time, people, test) => {
     // 3 days before booking date
-    console.log('MOBILE DATE DEBUG ====>')
-    console.log(`date from FE: ${date}`)
     const usableDate = new Date(date)
-    console.log(`date formatted date: ${usableDate}`)
     const newDate = usableDate.setDate(usableDate.getDate() -3)
-    const newDateFormatted = new Date(newDate).toLocaleDateString();
+    const newDateFormatted = new Date(newDate).toDateString();
     const cronValue = dateTimeToCron(newDateFormatted)
 
     console.log('================================ CRON =========================')
@@ -68,7 +65,7 @@ const cancelJob = () => {
 }
 
 const dateTimeToCron = (dateTime) => {
-  const formattedDate = new Date(dateTime).toISOString()
+  const formattedDate = new Date(dateTime)
   const m = moment(formattedDate);
   const cronExpression = `${m.seconds()} ${m.minutes()} ${m.hours()} ${m.date()} ${m.month() + 1} ${m.day()}`;
   return cronExpression;
