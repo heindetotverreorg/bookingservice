@@ -3,8 +3,14 @@ const puppeteer = require('puppeteer')
 const { init, login, selectDate, selectSport, selectCourtAndTime, checkForBookingType, getEndTime, selectPeople, book, parseTimeAndAdd } = require('./crawls')
 
 const bookPadel = async (date, time, people, test, cron = false) => {
+    console.log('================================ BOOK =========================')
     if (cron) {
-      console.log('SRTARTED FROM CRON JPB')
+      const week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      const day = new Date().getDay()
+      const hour = new Date().getHours()
+      const minute = new Date().getMinutes()
+      const seconds = new Date().getSeconds()
+      console.log(`STARTED FROM CRON JOB AT (EXACT RUN TIME): ${week[day]} ${hour}:${minute}:${seconds}`)
     }
     console.log(`PAYLOAD: ${date}, ${time}, ${people}, test is ${test ? 'enabled' : 'disabled'}`)
     const returnData = {}

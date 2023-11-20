@@ -275,6 +275,7 @@ const parseTimeAndAdd = (time, addOneHour) => {
 
 
 module.exports = {
+  delay,
   init,
   login,
   selectDate,

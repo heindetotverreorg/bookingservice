@@ -1,6 +1,7 @@
 const cron = require('node-cron');
 const moment = require('moment');
 const { bookPadel } = require('./book')
+const  { delay } = require('./crawls')
 
 let task
 
@@ -15,6 +16,7 @@ const startJob = (date, time, people, test) => {
     const newDateFormatted = new Date(newDate).toLocaleDateString();
     const cronValue = dateTimeToCron(newDateFormatted)
 
+    console.log('================================ CRON =========================')
     console.log('BOOKING DATE: ', date)
     console.log('3 DAYS BEFORE BOOK DATE: ', newDateFormatted)
     console.log('CRON VALUE (START OF THE JOB): ', dateTimeToCron(newDateFormatted))
@@ -27,9 +29,9 @@ const startJob = (date, time, people, test) => {
 
     const newTask = cron.schedule(test ? testCronValue : cronValue, async () =>  {
         console.log('STARTING CRON JOB')
+        console.log(`timeout ${30000} milliseconds`)
+        await delay(30000)
         const newDateFormatted = new Date(date).toLocaleDateString();
-        console.log(date)
-        console.log(bookPadel, newDateFormatted, time, people, test, true)
         await bookPadel(newDateFormatted, time, people, test, true)
         cancelJob()
     });
