@@ -11,11 +11,12 @@ const setTask = (newTask) => {
 
 const startJob = (date, time, people, test) => {
     // 3 days before booking date
+    console.log('MOBILE DATE DEBUG ====>')
+    console.log(`date from FE: ${date}`)
     const usableDate = new Date(date)
+    console.log(`date formatted date: ${usableDate}`)
     const newDate = usableDate.setDate(usableDate.getDate() -3)
     const newDateFormatted = new Date(newDate).toLocaleDateString();
-    console.log('MOBILE DATE DEBUG ====>')
-    console.log(newDateFormatted)
     const cronValue = dateTimeToCron(newDateFormatted)
 
     console.log('================================ CRON =========================')
