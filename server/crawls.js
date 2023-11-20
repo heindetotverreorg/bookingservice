@@ -34,6 +34,9 @@ const selectSport = async (page) => {
 const selectDate = async (page, date, pass = 0, reverse) => {
   try {
     let selector = ''
+    if (date.includes('-')) {
+      date = date.replaceAll('-', '/')
+    }
     const [day, month, year] = date.split('/')
     if (!reverse) {
       selector = `#cal_${year}_${month.replaceAll(removeLeadingZeroRegex, '')}_${day.replaceAll(removeLeadingZeroRegex, '')}`
