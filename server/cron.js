@@ -14,6 +14,8 @@ const startJob = (date, time, people, test) => {
     const usableDate = new Date(date)
     const newDate = usableDate.setDate(usableDate.getDate() -3)
     const newDateFormatted = new Date(newDate).toLocaleDateString();
+    console.log('MOBILE DATE DEBUG ====>')
+    console.log(newDateFormatted)
     const cronValue = dateTimeToCron(newDateFormatted)
 
     console.log('================================ CRON =========================')
