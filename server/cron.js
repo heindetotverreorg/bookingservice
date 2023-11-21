@@ -40,8 +40,7 @@ const startJob = (date, time, people, test) => {
         console.log(`THIS IS A TEST RUN: CRON VALUE FOR EVERY ${testCronValue}`)
     }
 
-    // const cronExpression = test ? testCronValue : cronValue
-    const cronExpression = testCronValue
+    const cronExpression = test ? testCronValue : cronValue
 
     const newTask = cron.schedule(cronExpression, async () =>  {
         console.log('STARTING CRON JOB')
