@@ -73,7 +73,7 @@ import { onMounted, ref, computed } from 'vue'
   const bookingResult = ref(null)
   const chosenDate = ref('')
   const defaultTime = ref('19:00')
-  const testValue = ref(true)
+  const testValue = ref(false)
   const isLoading = ref(false)
 
   onMounted(() => {
