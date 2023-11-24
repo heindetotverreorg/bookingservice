@@ -1,4 +1,5 @@
 let browser = null
+let attempt = 0
 const removeLeadingZeroRegex = new RegExp("^0+(?!$)",'g');
 
 const init = async (page, freshBrowser, url) => {
@@ -58,15 +59,20 @@ const selectDate = async (page, date, pass = 0, reverse) => {
   }
 }
 
-const selectCourtAndTime = async (page, time, pass, court = 4) => {
+const selectCourtAndTime = async (page, time, pass, court = 4, extraAttempt) => {
   const [hours, minutes] = time.split(':')
   let newtime = hours.length === 1 ? `0${hours}:${minutes}` : `${hours}:${minutes}`
+
+  console.log('ATTEMPT', attempt)
+
   try {
     const courtSelector = `tr[data-time="${newtime}"] [title="Padel Buiten ${court}"]`
     const selectedCourt = await page.waitForSelector(courtSelector);
 
-    // try and select a second timeslot to ensure full hour availablity
-    newtime = parseTimeAndAdd(time)
+    // try and select a second timeslot to ensure full hour availablity 
+    if (!extraAttempt) {
+      newtime = parseTimeAndAdd(time)
+    }
     const courtSelectorExtraHalfHour = `tr[data-time="${newtime}"] [title="Padel Buiten ${court}"]`
     const selectedCourtExtraHalfHour =  await page.waitForSelector(courtSelectorExtraHalfHour);
     await selectedCourtExtraHalfHour.click()
@@ -86,6 +92,15 @@ const selectCourtAndTime = async (page, time, pass, court = 4) => {
       console.log(error)
       return await selectCourtAndTime(page, time, pass, court - 1)
     } else {
+      // if the chosen timeslot isnt available, we try for one full hour later
+      // the booking website sometimes supports half hours, and sometimes doesnt so trying for one hour later is most valid
+      const newtime = parseTimeAndAdd(time, true)
+      attempt++
+      if (attempt < 2) {
+        console.log(`NEW BOOKING ATTEMPT WITH NEW TIME: attempt: ${attempt} | time: ${newtime}`)
+        return await selectCourtAndTime(page, newtime, pass, 4, true)
+      }
+      attempt = 0
       handleError({ message: `error: couldnt book court ${court} for timeslot: `, body: time, error })
     }
   }
