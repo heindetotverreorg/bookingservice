@@ -4,7 +4,7 @@ const removeLeadingZeroRegex = new RegExp("^0+(?!$)",'g');
 
 const init = async (page, freshBrowser, url) => {
   browser = freshBrowser
-  page.setDefaultTimeout(5000);
+  page.setDefaultTimeout(2500);
   await page.goto(url);
 }
 
@@ -59,7 +59,7 @@ const selectDate = async (page, date, pass = 0, reverse) => {
   }
 }
 
-const selectCourtAndTime = async (page, time, pass, court = 4, extraAttempt) => {
+const selectCourtAndTime = async (page, time, pass, court = 4) => {
   const [hours, minutes] = time.split(':')
   let newtime = hours.length === 1 ? `0${hours}:${minutes}` : `${hours}:${minutes}`
 
@@ -68,16 +68,6 @@ const selectCourtAndTime = async (page, time, pass, court = 4, extraAttempt) => 
   try {
     const courtSelector = `tr[data-time="${newtime}"] [title="Padel Buiten ${court}"]`
     const selectedCourt = await page.waitForSelector(courtSelector);
-
-    // try and select a second timeslot to ensure full hour availablity 
-    if (!extraAttempt) {
-      newtime = parseTimeAndAdd(time)
-    }
-    const courtSelectorExtraHalfHour = `tr[data-time="${newtime}"] [title="Padel Buiten ${court}"]`
-    const selectedCourtExtraHalfHour =  await page.waitForSelector(courtSelectorExtraHalfHour);
-    await selectedCourtExtraHalfHour.click()
-    await page.waitForSelector('.lightbox')
-    await page.click('#__make_cancel')
 
     await selectedCourt.click()
     await page.waitForSelector('.lightbox')
@@ -98,7 +88,7 @@ const selectCourtAndTime = async (page, time, pass, court = 4, extraAttempt) => 
       attempt++
       if (attempt < 2) {
         console.log(`NEW BOOKING ATTEMPT WITH NEW TIME: attempt: ${attempt} | time: ${newtime}`)
-        return await selectCourtAndTime(page, newtime, pass, 4, true)
+        return await selectCourtAndTime(page, newtime, pass, 4)
       }
       attempt = 0
       handleError({ message: `error: couldnt book court ${court} for timeslot: `, body: time, error })
