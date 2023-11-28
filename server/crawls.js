@@ -1,5 +1,5 @@
 let browser = null
-let attempt = 0
+let attempt = 1
 const removeLeadingZeroRegex = new RegExp("^0+(?!$)",'g');
 
 const init = async (page, freshBrowser, url) => {
