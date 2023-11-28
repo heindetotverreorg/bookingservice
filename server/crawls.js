@@ -85,8 +85,8 @@ const selectCourtAndTime = async (page, time, pass, court = 4) => {
       // if the chosen timeslot isnt available, we try for one full hour later
       // the booking website sometimes supports half hours, and sometimes doesnt so trying for one hour later is most valid
       const newtime = parseTimeAndAdd(time, true)
-      attempt++
       if (attempt < 2) {
+        attempt++
         console.log(`NEW BOOKING ATTEMPT WITH NEW TIME: attempt: ${attempt} | time: ${newtime}`)
         return await selectCourtAndTime(page, newtime, pass, 4)
       }
