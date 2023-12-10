@@ -4,7 +4,7 @@ const removeLeadingZeroRegex = new RegExp("^0+(?!$)",'g');
 
 const init = async (page, freshBrowser, url) => {
   browser = freshBrowser
-  page.setDefaultTimeout(5000);
+  page.setDefaultTimeout(2500);
   await page.goto(url);
 }
 
@@ -96,10 +96,10 @@ const selectCourtAndTime = async (page, time, pass, court = 4) => {
       attempt++
       if (attempt < 3) {
         console.log(`NEW BOOKING ATTEMPT WITH NEW TIME: attempt: ${attempt} | time: ${newtime}`)
-        return await selectCourtAndTime(page, newtime, pass, 4, true)
+        return await selectCourtAndTime(page, newtime, pass, 4)
       }
+      handleError({ message: `error: couldnt book court ${court} ${attempt ? 'after two attempts at different times  ' : ''}for timeslot: `, body: time, error })
       attempt = 0
-      handleError({ message: `error: couldnt book court ${court} for timeslot: `, body: time, error })
     }
   }
 }
@@ -123,25 +123,25 @@ const checkForBookingType = async (page) => {
 }
 
 const selectLongerTimeSlot = async (page) => {
-    try {
-      const selector = `select[name="end_time"]`
+    const selector = `select[name="end_time"]`
 
-      await page.waitForSelector(selector)
+    await page.waitForSelector(selector)
 
-      const options = await page.evaluate(({ selector }) => {
-        const selectEl = document.querySelector(selector)
-        if (selectEl) {
-          const options = [...selectEl.options]
-          return options.map(option => (option.text))
-        }
-      }, { selector })
+    const options = await page.evaluate(({ selector }) => {
+      const selectEl = document.querySelector(selector)
+      if (selectEl) {
+        const options = [...selectEl.options]
+        return options.map(option => (option.text))
+      }
+    }, { selector })
 
-      const lastOption = options[options.length - 1]
-
-      await page.select(selector, lastOption)
-    } catch (error) {
-      handleError({ message: 'error: set longer time slot out of peak time: ', body: '', error })
+    if (options.length !== 3) {
+      throw new Error('available time slot select options is less than 3, so no full hour can be booked')
     }
+
+    const lastOption = options[options.length - 1]
+
+    await page.select(selector, lastOption)
 }
 
 const getEndTime = async (page) => {
