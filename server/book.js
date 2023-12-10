@@ -22,7 +22,7 @@ const bookPadel = async (date, time, people, test, cron = false) => {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       env: {
         DISPLAY: ":10.0"
-    }
+      }
     });
     
     try {
