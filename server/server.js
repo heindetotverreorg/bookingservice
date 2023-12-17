@@ -25,8 +25,8 @@ app.post('/book', async (req, res) => {
 })
 
 app.post('/book-start-scheduled-booking', async (req, res) => {
-  const { date, time, people, test } = req.body
-  const data = await startJob(date, time, people, test)
+  const { date, time, people, test, testDateTime } = req.body
+  const data = await startJob(date, time, testDateTime, people, test)
   res.send(data)
 })
 

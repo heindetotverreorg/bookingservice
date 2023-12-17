@@ -12,6 +12,24 @@
     <label for="1">IS TEST</label>
     <input type="checkbox" id="1" v-model="testValue" />
   </div>
+  <div v-if="testValue">
+    <label for="test-time">test moment for cron</label>
+    <select
+          name="time"
+          id="test-time"
+          v-model="testTime"
+        >
+          <option value="">--Please choose an option for the cron job to run during a test--</option>
+          <option
+            v-for="time of timeOptions()"
+            :key="time"
+            :selected="time === testTime"
+            :value="time"
+          >
+            {{ time }}
+          </option>
+        </select>
+  </div>
   <div class="m-t-1">
     <div>
       <div>
@@ -75,6 +93,7 @@ import { onMounted, ref, computed } from 'vue'
   const defaultTime = ref('19:00')
   const testValue = ref(false)
   const isLoading = ref(false)
+  const testTime = ref('11:00')
 
   onMounted(() => {
     date()
@@ -123,11 +142,14 @@ import { onMounted, ref, computed } from 'vue'
     const url = `${process.env.VUE_APP_BOOKING_URL}${schedule === 'set' ? '-start-scheduled-booking' : ''}${schedule === 'cancel' ? '-stop-scheduled-booking' : ''}`
     const date = new Date(chosenDate.value).toLocaleDateString();
 
+    const testDateTime = createTestDateTimeMoment(testTime.value)
+
     const payload = {
       date: date,
       time: defaultTime.value,
       people: people,
-      test: testValue.value
+      test: testValue.value,
+      testDateTime: testDateTime
     }
 
     try {
@@ -138,6 +160,14 @@ import { onMounted, ref, computed } from 'vue'
     } catch (error) {
       isLoading.value = false
     }
+  }
+
+  const createTestDateTimeMoment = (time) => {
+    const date = new Date();
+    const [hour, minutes] = time.split(':')
+    date.setHours(hour)
+    date.setMinutes(minutes)
+    return date
   }
 </script>
 <style scoped>

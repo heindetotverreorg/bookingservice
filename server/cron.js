@@ -14,7 +14,7 @@ const setTask = (newTask) => {
     task = newTask
 }
 
-const startJob = (date, time, people, test) => {
+const startJob = (date, time, testTimeDate, people, test) => {
     if (date.includes('-')) {
         date = date.replaceAll('-', '/')
     }
@@ -34,10 +34,10 @@ const startJob = (date, time, people, test) => {
     console.log('3 DAYS BEFORE BOOK DATE: ', newDateFormatted)
     console.log('CRON VALUE (START OF THE JOB): ', dateTimeToCron(newDateFormatted))
 
-    const testCronValue = '*/1 * * * *' // every 5 minutes
+    const testCronValue = dateTimeToCron(testTimeDate)
 
     if (test) {
-        console.log(`THIS IS A TEST RUN: CRON VALUE FOR EVERY ${testCronValue}`)
+        console.log(`THIS IS A TEST RUN: CRON VALUE: ${testCronValue}`)
     }
 
     const cronExpression = test ? testCronValue : cronValue
@@ -58,12 +58,12 @@ const startJob = (date, time, people, test) => {
       
     task.start();
 
-    const message = `Scheduled job has started for (${cronToDateTime(cronValue)}) with booking data: ${date} at ${time}`
+    const message = `Scheduled job has started for (${ test ? cronToDateTime(testCronValue) : cronToDateTime(cronValue)}) with booking data: ${date} at ${time}`
 
     console.log(message)
 
     return {
-        message
+        message 
     }
 }
 
