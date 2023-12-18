@@ -4,7 +4,7 @@ const removeLeadingZeroRegex = new RegExp("^0+(?!$)",'g');
 
 const init = async (page, freshBrowser, url) => {
   browser = freshBrowser
-  page.setDefaultTimeout(3000);
+  page.setDefaultTimeout(6000);
   await page.goto(url);
 }
 
