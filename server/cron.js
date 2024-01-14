@@ -43,12 +43,12 @@ const startJob = (date, time, testTimeDate, people, test) => {
     const cronExpression = test ? testCronValue : cronValue
 
     const newTask = cron.schedule(cronExpression, async () =>  {
-        const delay = 20000
+        const delayValueMs = 20000
 
         console.log('STARTING CRON JOB')
-        console.log(`timeout ${delay} milliseconds`)
+        console.log(`timeout ${delayValueMs} milliseconds`)
         try {
-            await delay(delay)
+            await delay(delayValueMs)
             await bookPadel(date, time, people, test, true)
             cancelJob()
         } catch(error) {
