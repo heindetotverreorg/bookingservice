@@ -25,8 +25,8 @@ const startJob = (date, time, testTimeDate, people, test) => {
         date = `${month}/${day}/${year}`
         usableDate = new Date(date)
     }
-    let newDate = usableDate.setDate(usableDate.getDate() -3)
-    const newDateFormatted = new Date(newDate).toLocaleDateString('nl-NL');
+    const newDate = usableDate.setDate(usableDate.getDate() -3)
+    const newDateFormatted = new Date(newDate).toDateString();
     const cronValue = dateTimeToCron(newDateFormatted)
 
     console.log('================================ CRON =========================')
@@ -87,7 +87,9 @@ const cancelJob = () => {
 const dateTimeToCron = (dateTime) => {
   const formattedDate = new Date(dateTime)
   const m = moment(formattedDate);
-  const cronExpression = `${m.seconds()} ${m.minutes()} ${m.hours()} ${m.date()} ${m.month() + 1} ${m.day()}`;
+  // unfortunate compensate for timezone differences with server
+  const ml = moment(m).subtract(1, 'hours')
+  const cronExpression = `${ml.seconds()} ${ml.minutes()} ${ml.hours()} ${ml.date()} ${ml.month() + 1} ${m.day()}`;
   return cronExpression;
 }
 
