@@ -25,8 +25,8 @@ const startJob = (date, time, testTimeDate, people, test) => {
         date = `${month}/${day}/${year}`
         usableDate = new Date(date)
     }
-    const newDate = usableDate.setDate(usableDate.getDate() -3)
-    const newDateFormatted = new Date(newDate).toDateString();
+    let newDate = usableDate.setDate(usableDate.getDate() -3)
+    const newDateFormatted = new Date(newDate).toLocaleDateString('nl-NL');
     const cronValue = dateTimeToCron(newDateFormatted)
 
     console.log('================================ CRON =========================')
