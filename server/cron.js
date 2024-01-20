@@ -93,9 +93,12 @@ const checkJob = () => {
        
         const pattern = task?._scheduler?.timeMatcher?.pattern
         const timezone = task?._scheduler?.timeMatcher?.timezone
-        const time = cronToDateTime(pattern)
+        const dateFromCron = cronToDateTime(pattern)
+        const date = new Date(dateFromCron).toDateString();
+        const time = new Date(dateFromCron).toLocaleTimeString('nl-NL');
+        const [hours, minutes] = time.split(':')
 
-        message = `Scheduled job runs at: ${time} in timezone ${timezone}`
+        message = `Scheduled job runs ${date} at ${hours}:${minutes} in timezone ${timezone}`
     } else {
         message = `No scheduled job is running to check`
     }
