@@ -54,6 +54,9 @@ const startJob = (date, time, testTimeDate, people, test) => {
         } catch(error) {
             console.log(error)
         }
+    }, {
+        scheduled: true,
+        timezone: "Europe/Amsterdam"
     });
 
     setTask(newTask)
@@ -84,12 +87,29 @@ const cancelJob = () => {
     return message
 }
 
+const checkJob = () => {
+    let message 
+    if (task) {
+       
+        const pattern = task?._scheduler?.timeMatcher?.pattern
+        const timezone = task?._scheduler?.timeMatcher?.timezone
+        const time = cronToDateTime(pattern)
+
+        message = `Scheduled job runs at: ${time} in timezone ${timezone}`
+    } else {
+        message = `No scheduled job is running to check`
+    }
+
+    console.log(message)
+    return message
+}
+
 const dateTimeToCron = (dateTime) => {
   const formattedDate = new Date(dateTime)
   const m = moment(formattedDate);
   // unfortunate compensate for timezone differences with server
-  const ml = moment(m).subtract(1, 'hours')
-  const cronExpression = `${ml.seconds()} ${ml.minutes()} ${ml.hours()} ${ml.date()} ${ml.month() + 1} ${m.day()}`;
+//   const ml = moment(m).subtract(1, 'hours')
+  const cronExpression = `${m.seconds()} ${m.minutes()} ${m.hours()} ${m.date()} ${m.month() + 1} ${m.day()}`;
   return cronExpression;
 }
 
@@ -108,5 +128,6 @@ const cronToDateTime = (cronExpression) => {
 
 module.exports = {
     startJob,
-    cancelJob
+    cancelJob,
+    checkJob
 }

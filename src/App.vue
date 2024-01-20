@@ -74,6 +74,9 @@
     <div class="m-t-1">
       <button @click="reserve({ schedule: 'cancel' })">Annuleer geplande reservering</button>
     </div>
+    <div class="m-t-1">
+      <button @click="reserve({ schedule: 'check' })">Controleer geplande reservering</button>
+    </div>
   </div>
   <div>
     <p v-if="isLoading">LOADING ....</p>
@@ -139,7 +142,19 @@ import { onMounted, ref, computed } from 'vue'
 
   const reserve = async ({ schedule }) => {
     bookingResult.value = null
-    const url = `${process.env.VUE_APP_BOOKING_URL}${schedule === 'set' ? '-start-scheduled-booking' : ''}${schedule === 'cancel' ? '-stop-scheduled-booking' : ''}`
+
+    let url
+
+    if (schedule === 'set') {
+      url = `${process.env.VUE_APP_BOOKING_URL}-start-scheduled-booking`
+    }
+    if (schedule === 'cancel') {
+      url = `${process.env.VUE_APP_BOOKING_URL}-stop-scheduled-booking`
+    }
+    if (schedule === 'check') {
+      url = `${process.env.VUE_APP_BOOKING_URL}-check-scheduled-booking`
+    }
+
     const date = new Date(chosenDate.value).toLocaleDateString();
 
     const testDateTime = createTestDateTimeMoment(testTime.value)

@@ -7,7 +7,7 @@ const cors = require('cors')
 const port = process.env.VUE_APP_SEVERPORT || 3001
 
 const { bookPadel } = require('./book')
-const { startJob, cancelJob } = require('./cron')
+const { startJob, cancelJob, checkJob } = require('./cron')
 
 app.use(cors())
 app.use(express.json())
@@ -34,6 +34,12 @@ app.post('/book-stop-scheduled-booking', async (req, res) => {
   const data = await cancelJob()
   res.send(data)
 })
+
+app.post('/book-check-scheduled-booking', async (req, res) => {
+  const data = await checkJob()
+  res.send(data)
+})
+
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
