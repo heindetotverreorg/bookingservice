@@ -18,15 +18,11 @@ const startJob = (date, time, testTimeDate, people, test) => {
     if (date.includes('-')) {
         date = date.replaceAll('-', '/')
     }
-    // 3 days before booking date
-    let usableDate = new Date(date)
-    if (!usableDate.isValid()) {
-        const [day, month, year] = date.split('/')
-        date = `${month}/${day}/${year}`
-        usableDate = new Date(date)
-    }
-    const newDate = usableDate.setDate(usableDate.getDate() -3)
-    const newDateFormatted = new Date(newDate).toDateString();
+    date = moment(date).format('DD/MM/YYYY')
+    let usableDate = moment(date).subtract(3, 'd')
+    console.log('INCOMING DATE: ', date)
+    const newDateFormatted = usableDate.format('MM/DD/YYYY')
+    console.log('DATE - 3 DAYS AFTER FORMATTING: ', newDateFormatted)
     const cronValue = dateTimeToCron(newDateFormatted)
 
     console.log('================================ CRON =========================')
@@ -110,8 +106,6 @@ const checkJob = () => {
 const dateTimeToCron = (dateTime) => {
   const formattedDate = new Date(dateTime)
   const m = moment(formattedDate);
-  // unfortunate compensate for timezone differences with server
-//   const ml = moment(m).subtract(1, 'hours')
   const cronExpression = `${m.seconds()} ${m.minutes()} ${m.hours()} ${m.date()} ${m.month() + 1} ${m.day()}`;
   return cronExpression;
 }

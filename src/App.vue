@@ -61,7 +61,7 @@
     </div>
     <h2>Direct reserveren om {{ presentationDate }} - {{ defaultTime }}:</h2>
     <div class="m-t-1">
-      <button @click="reserve">Reserveren</button>
+      <button @click="reserve({ schedule: 'direct' })">Reserveren</button>
     </div>
   </div>
   <div class="m-t-1">
@@ -145,6 +145,9 @@ import { onMounted, ref, computed } from 'vue'
 
     let url
 
+    if (schedule === 'direct') {
+      url = `${process.env.VUE_APP_BOOKING_URL}`
+    }
     if (schedule === 'set') {
       url = `${process.env.VUE_APP_BOOKING_URL}-start-scheduled-booking`
     }
