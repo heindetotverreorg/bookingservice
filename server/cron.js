@@ -15,11 +15,16 @@ const setTask = (newTask) => {
 }
 
 const startJob = (date, time, testTimeDate, people, test) => {
+    console.log(date)
     if (date.includes('-')) {
         date = date.replaceAll('-', '/')
     }
-    date = moment(date).format('DD/MM/YYYY')
-    let usableDate = moment(date).subtract(3, 'd')
+    date = date.split('/')
+    // return to american format
+    date = `${date[1]}/${date[0]}/${date[2]}`
+    date = moment(date)
+    let usableDate = moment(date)
+    usableDate = usableDate.subtract(3, 'days')
     console.log('INCOMING DATE: ', date)
     const newDateFormatted = usableDate.format('MM/DD/YYYY')
     console.log('DATE - 3 DAYS AFTER FORMATTING: ', newDateFormatted)
