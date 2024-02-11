@@ -22,7 +22,7 @@ const startJob = (date, time, testTimeDate, people, test) => {
     date = date.split('/')
     // return to american format
     date = `${date[1]}/${date[0]}/${date[2]}`
-    date = moment(date)
+    date = moment(date).format('DD/MM/YYYY')
     let usableDate = moment(date)
     usableDate = usableDate.subtract(3, 'days')
     console.log('INCOMING DATE: ', date)
