@@ -1,56 +1,56 @@
 const cron = require('node-cron');
 const moment = require('moment');
 const { bookPadel } = require('./book')
-const  { delay } = require('./crawls')
-
-
-Date.prototype.isValid = function () {
-    return this.getTime() === this.getTime();
-};  
-
+const { delay } = require('./crawls')
 let task
 
-const setTask = (newTask) => {
-    task = newTask
-}
-
 const startJob = (date, time, testTimeDate, people, test) => {
-    console.log(date)
+    // normalize seperator
     if (date.includes('-')) {
         date = date.replaceAll('-', '/')
     }
+    // return to american date format
     date = date.split('/')
-    // return to american format
     date = `${date[1]}/${date[0]}/${date[2]}`
-    date = moment(date).format('DD/MM/YYYY')
-    let usableDate = moment(date)
-    usableDate = usableDate.subtract(3, 'days')
-    console.log('INCOMING DATE: ', date)
+    // print incoming date to book
+    console.log('INCOMING DATE TO BOOK: ', date)
+    const usableDate = moment(date).subtract(3, 'days')
     const newDateFormatted = usableDate.format('MM/DD/YYYY')
-    console.log('DATE - 3 DAYS AFTER FORMATTING: ', newDateFormatted)
+    // print date to run script
+    console.log('DATE TO RUN SCRIPT: ', newDateFormatted)
     const cronValue = dateTimeToCron(newDateFormatted)
 
+    // log booking data
     console.log('================================ CRON =========================')
     console.log('BOOKING DATE: ', date)
-    console.log('3 DAYS BEFORE BOOK DATE: ', newDateFormatted)
-    console.log('CRON VALUE (START OF THE JOB): ', dateTimeToCron(newDateFormatted))
+    console.log('SCRIPT RUN DATE: ', newDateFormatted)
+    console.log('SCRIPT RUN DATE IN CRON: ', dateTimeToCron(newDateFormatted))
 
+    // set cron value for testing purposes
     const testCronValue = dateTimeToCron(testTimeDate)
 
+    // log test run
     if (test) {
         console.log(`THIS IS A TEST RUN: CRON VALUE: ${testCronValue}`)
     }
 
+    // set cron expression
     const cronExpression = test ? testCronValue : cronValue
 
+    // create task
     const newTask = cron.schedule(cronExpression, async () =>  {
+        // set delay 
         const delayValueMs = 20000
 
+        // print task data
         console.log('STARTING CRON JOB')
         console.log(`timeout ${delayValueMs} milliseconds`)
         try {
+            // delay
             await delay(delayValueMs)
+            // book
             await bookPadel(date, time, people, test, true)
+            // cancel
             cancelJob()
         } catch(error) {
             console.log(error)
@@ -60,12 +60,16 @@ const startJob = (date, time, testTimeDate, people, test) => {
         timezone: "Europe/Amsterdam"
     });
 
+    // set task outside of scope to be able to cancel task
     setTask(newTask)
       
+    // start the task
     task.start();
 
+    // retun message
     const message = `Scheduled job has started for (${ test ? cronToDateTime(testCronValue) : cronToDateTime(cronValue)}) with booking data: ${date} at ${time}`
 
+    // print return message
     console.log(message)
 
     return {
@@ -126,6 +130,10 @@ const cronToDateTime = (cronExpression) => {
     .day(cronArray[5]);
 
   return dateTime.format();
+}
+
+const setTask = (newTask) => {
+    task = newTask
 }
 
 module.exports = {
