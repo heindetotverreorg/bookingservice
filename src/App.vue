@@ -104,12 +104,12 @@ import { onMounted, ref, computed } from 'vue'
   })
 
   const presentationDate = computed(() => {
-    return new Date(chosenDate.value).toLocaleDateString();
+    return moment(chosenDate.value)
   })
 
   const date = () => {
-    const today = new Date();
-    today.setDate(today.getDate() + 3)
+    const today = moment()
+    today.add(3, 'days')
     chosenDate.value = today
   }
 
@@ -159,7 +159,7 @@ import { onMounted, ref, computed } from 'vue'
       url = `${process.env.VUE_APP_BOOKING_URL}-check-scheduled-booking`
     }
 
-    const date = new Date(chosenDate.value).toUTCString();
+    const date = moment(chosenDate.value).toISOString()
 
     const testDateTime = createTestDateTimeMoment(testTime.value)
 
@@ -184,8 +184,8 @@ import { onMounted, ref, computed } from 'vue'
   const createTestDateTimeMoment = (time) => {
     const date = moment()
     const [hour, minutes] = time.split(':')
-    date.setHours(hour)
-    date.minutes(minutes)
+    date.set('hour', hour)
+    date.set('minutes', minutes)
     return date.toISOString()
   }
 </script>
