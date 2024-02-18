@@ -10,10 +10,11 @@ const bookPadel = async (date, time, people, test, cron = false) => {
     console.log('================================ BOOK =========================')
     if (cron) {
       const week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-      const day = new Date().getDay()
-      const hour = new Date().getHours()
-      const minute = new Date().getMinutes()
-      const seconds = new Date().getSeconds()
+      const momentDate = moment(date)
+      const day = momentDate.day()
+      const hour = momentDate.hour()
+      const minute = momentDate.minute()
+      const seconds = momentDate.seconds()
       console.log(`STARTED FROM CRON JOB AT (EXACT RUN TIME): ${week[day]} ${hour}:${minute}:${seconds}`)
     }
     console.log(`PAYLOAD: ${date}, ${time}, ${people}, test is ${test ? 'enabled' : 'disabled'}`)
@@ -65,7 +66,7 @@ const bookPadel = async (date, time, people, test, cron = false) => {
       if (browser) {
         await browser.close();
       }
-      
+
       console.log(error)
       returnData.error = error
     }

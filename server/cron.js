@@ -1,42 +1,29 @@
 const cron = require('node-cron');
 const moment = require('moment');
+const momentTimezone = require('moment-timezone');
 const { bookPadel } = require('./book')
 const { delay } = require('./crawls')
 let task
 
 const startJob = (date, time, testTimeDate, people, test) => {
-    console.log('TIME: ', time)
-    console.log('TEST TIME DATE', testTimeDate)
-    // print incoming date to book
-    console.log('INCOMING DATE TO BOOK: ', date)
     const usableDate = moment(date).subtract(3, 'days')
-    console.log(usableDate)
-    const newDateFormatted = usableDate.format('MM/DD/YYYY')
-    // print date to run script
-    console.log('DATE TO RUN SCRIPT: ', newDateFormatted)
-    const cronValue = dateTimeToCron(newDateFormatted)
+    const newDateFormatted = formatToRTFC(usableDate)
+    let cronExpression = dateTimeToCron(newDateFormatted)
 
     // log booking data
     console.log('================================ CRON =========================')
-    console.log('BOOKING DATE: ', date)
-    console.log('SCRIPT RUN DATE: ', newDateFormatted)
-    console.log('SCRIPT RUN DATE IN CRON: ', dateTimeToCron(newDateFormatted))
-
-    // set cron value for testing purposes
-    const testCronValue = dateTimeToCron(testTimeDate)
 
     // log test run
     if (test) {
-        console.log(`THIS IS A TEST RUN: CRON VALUE: ${testCronValue}`)
-    }
 
-    // set cron expression
-    const cronExpression = test ? testCronValue : cronValue
+        cronExpression = dateTimeToCron(testTimeDate)
+        console.log(`THIS IS A TEST RUN: CRON VALUE: ${cronExpression}`)
+    }
 
     // create task
     const newTask = cron.schedule(cronExpression, async () =>  {
         // set delay 
-        const delayValueMs = 20000
+        const delayValueMs = 2000
 
         // print task data
         console.log('STARTING CRON JOB')
@@ -62,7 +49,7 @@ const startJob = (date, time, testTimeDate, people, test) => {
     task.start();
 
     // retun message
-    const message = `Scheduled job has started for (${ test ? cronToDateTime(testCronValue) : cronToDateTime(cronValue)}) with booking data: ${date} at ${time}`
+    const message = `Scheduled job has started for (${cronToDateTime(cronExpression)}) with booking data: ${date} at ${time}`
 
     // print return message
     console.log(message)
@@ -83,6 +70,7 @@ const cancelJob = () => {
         message = `No scheduled job is running to cancel`
     }
 
+    // print return message
     console.log(message)
     return message
 }
@@ -104,14 +92,19 @@ const checkJob = () => {
         message = `No scheduled job is running to check`
     }
 
+    // print return message
     console.log(message)
     return message
 }
 
 const dateTimeToCron = (dateTime) => {
-  const m = moment(dateTime);
-  const cronExpression = `${m.seconds()} ${m.minutes()} ${m.hours()} ${m.date()} ${m.month() + 1} ${m.day()}`;
-  return cronExpression;
+    console.log('dateTime before converting to cron: ', dateTime)
+    const dutchDateTime = momentTimezone(dateTime).tz('Europe/Amsterdam')
+    console.log('dutchTime: ', formatToRTFC(dutchDateTime))
+    const m = moment(dutchDateTime);
+    const cronExpression = `${m.seconds()} ${m.minutes()} ${m.hours()} ${m.date()} ${m.month() + 1} ${m.day()}`;
+    console.log('cronExpression after converting dateTme: ', cronExpression)
+    return cronExpression;
 }
 
 const cronToDateTime = (cronExpression) => {
@@ -130,6 +123,11 @@ const cronToDateTime = (cronExpression) => {
 const setTask = (newTask) => {
     task = newTask
 }
+
+const formatToRTFC = (moment) => {
+    const f = "ddd, DD MMM YYYY HH:mm:ss ZZ"
+    return moment.format(f)
+  }
 
 module.exports = {
     startJob,
