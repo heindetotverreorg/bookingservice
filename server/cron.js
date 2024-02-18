@@ -7,10 +7,6 @@ let task
 const startJob = (date, time, testTimeDate, people, test) => {
     console.log('TIME: ', time)
     console.log('TEST TIME DATE', testTimeDate)
-    // normalize seperator
-    if (date.includes('-')) {
-        date = date.replaceAll('-', '/')
-    }
     // print incoming date to book
     console.log('INCOMING DATE TO BOOK: ', date)
     const usableDate = moment(date).subtract(3, 'days')
