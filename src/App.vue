@@ -89,6 +89,7 @@
 
 <script setup>
 import axios from 'axios'
+import moment from 'moment';
 import { onMounted, ref, computed } from 'vue'
 
   const bookingResult = ref(null)
@@ -181,11 +182,11 @@ import { onMounted, ref, computed } from 'vue'
   }
 
   const createTestDateTimeMoment = (time) => {
-    const date = new Date();
+    const date = moment()
     const [hour, minutes] = time.split(':')
     date.setHours(hour)
-    date.setMinutes(minutes)
-    return date.toUTCString();
+    date.minutes(minutes)
+    return date.toISOString()
   }
 </script>
 <style scoped>
