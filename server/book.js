@@ -4,8 +4,9 @@ const moment = require('moment');
 const { init, login, selectDate, selectSport, selectCourtAndTime, checkForBookingType, getEndTime, selectPeople, book, parseTimeAndAdd } = require('./crawls')
 
 const bookPadel = async (date, time, people, test, cron = false) => { 
-    console.log('dat input before formatting', date)
+    console.log('date input before formatting', date)
     date = moment(date).format('MM/DD/YYYY')
+    console.log('date input after formatting', date)
 
     console.log('================================ BOOK =========================')
     if (cron) {
