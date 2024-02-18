@@ -1,11 +1,12 @@
 const puppeteer = require('puppeteer')
 const moment = require('moment');
+const momentTimezone = require('moment-timezone');
 
 const { init, login, selectDate, selectSport, selectCourtAndTime, checkForBookingType, getEndTime, selectPeople, book, parseTimeAndAdd } = require('./crawls')
 
 const bookPadel = async (date, time, people, test, cron = false) => { 
     console.log('date input before formatting', date)
-    date = moment(date).format('MM/DD/YYYY')
+    date = momentTimezone(date).tz('Europe/Amsterdam').format('MM/DD/YYYY')
     console.log('date input after formatting', date)
 
     console.log('================================ BOOK =========================')
