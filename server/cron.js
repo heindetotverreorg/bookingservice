@@ -55,9 +55,6 @@ const startJob = (date, time, testTimeDate, people, test) => {
         } catch(error) {
             console.log(error)
         }
-    }, {
-        scheduled: true,
-        timezone: "Europe/Amsterdam"
     });
 
     // set task outside of scope to be able to cancel task
