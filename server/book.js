@@ -1,13 +1,10 @@
 const puppeteer = require('puppeteer')
 const moment = require('moment');
-const { formatToRTFC } = require('./utils');
 
 const { init, login, selectDate, selectSport, selectCourtAndTime, checkForBookingType, getEndTime, selectPeople, book, parseTimeAndAdd } = require('./crawls')
 
 const bookPadel = async (date, time, people, test, cron = false) => { 
-    // reformat date
-    date = moment(date)
-    date = formatToRTFC(date)
+    console.log('dat input before formatting', date)
     date = moment(date).format('MM/DD/YYYY')
 
     console.log('================================ BOOK =========================')
