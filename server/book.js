@@ -1,16 +1,19 @@
 const puppeteer = require('puppeteer')
 const moment = require('moment');
+const { formatToRTFC } = require('./utils');
 
 const { init, login, selectDate, selectSport, selectCourtAndTime, checkForBookingType, getEndTime, selectPeople, book, parseTimeAndAdd } = require('./crawls')
 
 const bookPadel = async (date, time, people, test, cron = false) => { 
     // reformat date
+    date = moment(date)
+    date = formatToRTFC(date)
     date = moment(date).format('MM/DD/YYYY')
 
     console.log('================================ BOOK =========================')
     if (cron) {
       const week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-      const momentDate = moment(date)
+      const momentDate = moment()
       const day = momentDate.day()
       const hour = momentDate.hour()
       const minute = momentDate.minute()

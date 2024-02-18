@@ -105,7 +105,7 @@ import { onMounted, ref, computed } from 'vue'
   })
 
   const presentationDate = computed(() => {
-    return moment(chosenDate.value)
+    return moment(chosenDate.value).format('dddd DD-MM-YYYY')
   })
 
   const date = () => {

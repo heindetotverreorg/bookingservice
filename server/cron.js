@@ -3,6 +3,7 @@ const moment = require('moment');
 const momentTimezone = require('moment-timezone');
 const { bookPadel } = require('./book')
 const { delay } = require('./crawls')
+const { formatToRTFC } = require('./utils');
 let task
 
 const startJob = (date, time, testTimeDate, people, test) => {
@@ -15,7 +16,6 @@ const startJob = (date, time, testTimeDate, people, test) => {
 
     // log test run
     if (test) {
-
         cronExpression = dateTimeToCron(testTimeDate)
         console.log(`THIS IS A TEST RUN: CRON VALUE: ${cronExpression}`)
     }
@@ -124,10 +124,7 @@ const setTask = (newTask) => {
     task = newTask
 }
 
-const formatToRTFC = (moment) => {
-    const f = "ddd, DD MMM YYYY HH:mm:ss ZZ"
-    return moment.format(f)
-  }
+
 
 module.exports = {
     startJob,
