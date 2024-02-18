@@ -90,6 +90,7 @@
 <script setup>
 import axios from 'axios'
 import moment from 'moment';
+import momentTimezone from 'moment-timezone'
 import { onMounted, ref, computed } from 'vue'
 
   const bookingResult = ref(null)
@@ -182,10 +183,17 @@ import { onMounted, ref, computed } from 'vue'
   }
 
   const createTestDateTimeMoment = (time) => {
+    console.log('test time creation time', time)
     const date = moment()
+    const dateTimezoned = momentTimezone().tz('Europe/Amsterdam')
     const [hour, minutes] = time.split(':')
     date.set('hour', hour)
     date.set('minutes', minutes)
+    const [hourtz, minutestz] = time.split(':')
+    dateTimezoned.set('hour', hourtz)
+    dateTimezoned.set('minutes', minutestz)
+    console.log('test time creation time after manipulation', `${date.hours()}:${date.minutes()}`)
+    console.log('test time creation time after manipulation TIMEZONED', `${dateTimezoned.hours()}:${dateTimezoned.minutes()}`)
     return date.toISOString()
   }
 </script>
