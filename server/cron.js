@@ -9,9 +9,6 @@ const startJob = (date, time, testTimeDate, people, test) => {
     if (date.includes('-')) {
         date = date.replaceAll('-', '/')
     }
-    // return to american date format
-    // date = date.split('/')
-    // date = `${date[1]}/${date[0]}/${date[2]}`
     // print incoming date to book
     console.log('INCOMING DATE TO BOOK: ', date)
     const usableDate = moment(date).subtract(3, 'days')

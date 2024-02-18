@@ -1,8 +1,12 @@
 const puppeteer = require('puppeteer')
+const moment = require('moment');
 
 const { init, login, selectDate, selectSport, selectCourtAndTime, checkForBookingType, getEndTime, selectPeople, book, parseTimeAndAdd } = require('./crawls')
 
-const bookPadel = async (date, time, people, test, cron = false) => {
+const bookPadel = async (date, time, people, test, cron = false) => { 
+    // reformat date
+    date = moment(date).format('MM/DD/YYYY')
+
     console.log('================================ BOOK =========================')
     if (cron) {
       const week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -28,33 +32,39 @@ const bookPadel = async (date, time, people, test, cron = false) => {
     
     const page = await browser.newPage();
 
-    await init(page, browser, url)
+    try {
+      await init(page, browser, url)
 
-    await login(page)
+      await login(page)
 
-    await selectSport(page)
+      await selectSport(page)
 
-    await selectDate(page, date)
+      await selectDate(page, date)
 
-    const {
-      court: courtFirstBooking,
-      time: timeFirstBooking,
-      endtime: firstEndtime,
-      isPeak
-    } = await selectCourtTimePeopleAndConfirm(pass, page, time, people, test)
+      const {
+        court: courtFirstBooking,
+        time: timeFirstBooking,
+        endtime: firstEndtime,
+        isPeak
+      } = await selectCourtTimePeopleAndConfirm(pass, page, time, people, test)
 
-    await selectDate(page, date)
+      await selectDate(page, date)
 
-    const {
-      court: courtSecondBooking,
-      time: timeSecondBooking,
-      endtime: secondEndTime
-    } = await selectCourtTimePeopleAndConfirm(pass + 1, page, time, people, test, isPeak)
+      const {
+        court: courtSecondBooking,
+        time: timeSecondBooking,
+        endtime: secondEndTime
+      } = await selectCourtTimePeopleAndConfirm(pass + 1, page, time, people, test, isPeak)
 
-    returnData.bookedCourt = `Booked Court(s): Court ${courtFirstBooking} ${courtSecondBooking ? ' and court' : ''} ${courtSecondBooking ? courtSecondBooking : ''}`
-    returnData.bookedTime = `Booked Time(s): ${timeFirstBooking} ${timeSecondBooking ? 'and' : ''} ${timeSecondBooking ? timeSecondBooking : ''}`
-    returnData.endtime = `End time: ${secondEndTime ? secondEndTime : firstEndtime}`
-    returnData.bookedDate = `Booked date: ${date}`
+      returnData.bookedCourt = `Booked Court(s): Court ${courtFirstBooking} ${courtSecondBooking ? ' and court' : ''} ${courtSecondBooking ? courtSecondBooking : ''}`
+      returnData.bookedTime = `Booked Time(s): ${timeFirstBooking} ${timeSecondBooking ? 'and' : ''} ${timeSecondBooking ? timeSecondBooking : ''}`
+      returnData.endtime = `End time: ${secondEndTime ? secondEndTime : firstEndtime}`
+      returnData.bookedDate = `Booked date: ${date}`
+
+    } catch (error) {
+      console.log(error)
+      returnData.error = error
+    }
     
     if (browser) {
       await browser.close();
