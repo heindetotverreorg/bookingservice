@@ -10,11 +10,12 @@ const startJob = (date, time, testTimeDate, people, test) => {
         date = date.replaceAll('-', '/')
     }
     // return to american date format
-    date = date.split('/')
-    date = `${date[1]}/${date[0]}/${date[2]}`
+    // date = date.split('/')
+    // date = `${date[1]}/${date[0]}/${date[2]}`
     // print incoming date to book
     console.log('INCOMING DATE TO BOOK: ', date)
     const usableDate = moment(date).subtract(3, 'days')
+    console.log(usableDate)
     const newDateFormatted = usableDate.format('MM/DD/YYYY')
     // print date to run script
     console.log('DATE TO RUN SCRIPT: ', newDateFormatted)

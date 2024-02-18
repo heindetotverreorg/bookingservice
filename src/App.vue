@@ -158,7 +158,7 @@ import { onMounted, ref, computed } from 'vue'
       url = `${process.env.VUE_APP_BOOKING_URL}-check-scheduled-booking`
     }
 
-    const date = new Date(chosenDate.value).toLocaleDateString();
+    const date = new Date(chosenDate.value).toDateString();
 
     const testDateTime = createTestDateTimeMoment(testTime.value)
 
