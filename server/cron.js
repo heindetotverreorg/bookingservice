@@ -109,8 +109,7 @@ const checkJob = () => {
 }
 
 const dateTimeToCron = (dateTime) => {
-  const formattedDate = new Date(dateTime)
-  const m = moment(formattedDate);
+  const m = moment(dateTime);
   const cronExpression = `${m.seconds()} ${m.minutes()} ${m.hours()} ${m.date()} ${m.month() + 1} ${m.day()}`;
   return cronExpression;
 }

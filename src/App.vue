@@ -197,9 +197,6 @@ import { onMounted, ref, computed } from 'vue'
     dateTimezoned.set('hour', hourtz)
     dateTimezoned.set('minutes', minutestz)
     console.log('test time creation time after manipulation TIMEZONED', `${dateTimezoned.hours()}:${dateTimezoned.minutes()}`)
-    console.log(dateTimezoned.format('YYYY-MM-DDTHH:mm:ss'))
-    console.log(dateTimezoned.toString())
-    console.log(dateTimezoned.toISOString())
     return formatToRTFC(dateTimezoned)
   }
 
