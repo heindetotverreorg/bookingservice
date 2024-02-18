@@ -55,6 +55,8 @@ const startJob = (date, time, testTimeDate, people, test) => {
         } catch(error) {
             console.log(error)
         }
+    }, {
+        timezone: 'Europe/Amsterdam'
     });
 
     // set task outside of scope to be able to cancel task
@@ -96,8 +98,9 @@ const checkJob = () => {
         const pattern = task?._scheduler?.timeMatcher?.pattern
         const timezone = task?._scheduler?.timeMatcher?.timezone
         const dateFromCron = cronToDateTime(pattern)
-        const date = new Date(dateFromCron).toDateString();
-        const time = new Date(dateFromCron).toLocaleTimeString('nl-NL');
+        const m = moment(dateFromCron);
+        const date = `${m.date()}/${m.month() + 1}`
+        const time = `${m.hours()}:${m.minutes()}`
         const [hours, minutes] = time.split(':')
 
         message = `Scheduled job runs ${date} at ${hours}:${minutes} in timezone ${timezone}`
