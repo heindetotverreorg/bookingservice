@@ -160,7 +160,7 @@ import { onMounted, ref, computed } from 'vue'
       url = `${process.env.VUE_APP_BOOKING_URL}-check-scheduled-booking`
     }
 
-    const date = momentTimezone(chosenDate.value).tz('Europe/Amsterdam').toISOString()
+    const date = formatToRTFC(momentTimezone(chosenDate.value).tz('Europe/Amsterdam'))
 
     const testDateTime = createTestDateTimeMoment(testTime.value)
 
@@ -171,6 +171,8 @@ import { onMounted, ref, computed } from 'vue'
       test: testValue.value,
       testDateTime: testDateTime
     }
+
+    console.log('LOGGING PAYLOAD', payload)
 
     try {
       isLoading.value = true
@@ -183,16 +185,27 @@ import { onMounted, ref, computed } from 'vue'
   }
 
   const createTestDateTimeMoment = (time) => {
+    console.log('test time creation time before manipulation', time)
+
     const date = moment()
     const dateTimezoned = momentTimezone().tz('Europe/Amsterdam')
     const [hour, minutes] = time.split(':')
     date.set('hour', hour)
     date.set('minutes', minutes)
+
     const [hourtz, minutestz] = time.split(':')
     dateTimezoned.set('hour', hourtz)
     dateTimezoned.set('minutes', minutestz)
-    // console.log('test time creation time after manipulation TIMEZONED', `${dateTimezoned.hours()}:${dateTimezoned.minutes()}`)
-    return dateTimezoned.toISOString()
+    console.log('test time creation time after manipulation TIMEZONED', `${dateTimezoned.hours()}:${dateTimezoned.minutes()}`)
+    console.log(dateTimezoned.format('YYYY-MM-DDTHH:mm:ss'))
+    console.log(dateTimezoned.toString())
+    console.log(dateTimezoned.toISOString())
+    return formatToRTFC(dateTimezoned)
+  }
+
+  const formatToRTFC = (moment) => {
+    const f = "ddd, DD MMM YYYY HH:mm:ss ZZ"
+    return moment.format(f)
   }
 </script>
 <style scoped>
