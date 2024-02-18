@@ -62,6 +62,10 @@ const bookPadel = async (date, time, people, test, cron = false) => {
       returnData.bookedDate = `Booked date: ${date}`
 
     } catch (error) {
+      if (browser) {
+        await browser.close();
+      }
+      
       console.log(error)
       returnData.error = error
     }

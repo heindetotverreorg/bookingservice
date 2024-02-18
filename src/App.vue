@@ -158,7 +158,7 @@ import { onMounted, ref, computed } from 'vue'
       url = `${process.env.VUE_APP_BOOKING_URL}-check-scheduled-booking`
     }
 
-    const date = new Date(chosenDate.value).toDateString();
+    const date = new Date(chosenDate.value).toUTCString();
 
     const testDateTime = createTestDateTimeMoment(testTime.value)
 
@@ -185,7 +185,7 @@ import { onMounted, ref, computed } from 'vue'
     const [hour, minutes] = time.split(':')
     date.setHours(hour)
     date.setMinutes(minutes)
-    return date
+    return date.toUTCString();
   }
 </script>
 <style scoped>

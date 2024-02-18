@@ -5,6 +5,8 @@ const { delay } = require('./crawls')
 let task
 
 const startJob = (date, time, testTimeDate, people, test) => {
+    console.log('TIME: ', time)
+    console.log('TEST TIME DATE', testTimeDate)
     // normalize seperator
     if (date.includes('-')) {
         date = date.replaceAll('-', '/')
