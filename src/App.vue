@@ -160,7 +160,7 @@ import { onMounted, ref, computed } from 'vue'
       url = `${process.env.VUE_APP_BOOKING_URL}-check-scheduled-booking`
     }
 
-    const date = moment(chosenDate.value).toISOString()
+    const date = momentTimezone(chosenDate.value).tz('Europe/Amsterdam').toISOString()
 
     const testDateTime = createTestDateTimeMoment(testTime.value)
 
@@ -183,7 +183,6 @@ import { onMounted, ref, computed } from 'vue'
   }
 
   const createTestDateTimeMoment = (time) => {
-    console.log('test time creation time', time)
     const date = moment()
     const dateTimezoned = momentTimezone().tz('Europe/Amsterdam')
     const [hour, minutes] = time.split(':')
@@ -192,9 +191,8 @@ import { onMounted, ref, computed } from 'vue'
     const [hourtz, minutestz] = time.split(':')
     dateTimezoned.set('hour', hourtz)
     dateTimezoned.set('minutes', minutestz)
-    console.log('test time creation time after manipulation', `${date.hours()}:${date.minutes()}`)
-    console.log('test time creation time after manipulation TIMEZONED', `${dateTimezoned.hours()}:${dateTimezoned.minutes()}`)
-    return date.toISOString()
+    // console.log('test time creation time after manipulation TIMEZONED', `${dateTimezoned.hours()}:${dateTimezoned.minutes()}`)
+    return dateTimezoned.toISOString()
   }
 </script>
 <style scoped>
