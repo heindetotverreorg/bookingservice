@@ -11,7 +11,7 @@ const startJob = (date, time, testTimeDate, people, test) => {
     const newDateFormatted = formatToRTFC(usableDate)
     let cronExpression = dateTimeToCron(newDateFormatted)
 
-    // log booking data
+    // log cron data
     console.log('================================ CRON =========================')
 
     // log test run
@@ -98,12 +98,9 @@ const checkJob = () => {
 }
 
 const dateTimeToCron = (dateTime) => {
-    console.log('dateTime before converting to cron: ', dateTime)
     const dutchDateTime = momentTimezone(dateTime).tz('Europe/Amsterdam')
-    console.log('dutchTime: ', formatToRTFC(dutchDateTime))
     const m = moment(dutchDateTime);
     const cronExpression = `${m.seconds()} ${m.minutes()} ${m.hours()} ${m.date()} ${m.month() + 1} ${m.day()}`;
-    console.log('cronExpression after converting dateTme: ', cronExpression)
     return cronExpression;
 }
 

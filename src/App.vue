@@ -185,8 +185,6 @@ import { onMounted, ref, computed } from 'vue'
   }
 
   const createTestDateTimeMoment = (time) => {
-    console.log('test time creation time before manipulation', time)
-
     const date = moment()
     const dateTimezoned = momentTimezone().tz('Europe/Amsterdam')
     const [hour, minutes] = time.split(':')
@@ -196,7 +194,6 @@ import { onMounted, ref, computed } from 'vue'
     const [hourtz, minutestz] = time.split(':')
     dateTimezoned.set('hour', hourtz)
     dateTimezoned.set('minutes', minutestz)
-    console.log('test time creation time after manipulation TIMEZONED', `${dateTimezoned.hours()}:${dateTimezoned.minutes()}`)
     return formatToRTFC(dateTimezoned)
   }
 
