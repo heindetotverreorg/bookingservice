@@ -95,6 +95,15 @@ const mapReturnData = (courtFirstBooking, courtSecondBooking, timeFirstBooking, 
         bookedDate: `Booked date: ${date}`
     }
 }
+
+const isDateMoreThanThreeDaysEarlier = (currentDate, payloadDate) => {
+    const currentDateMoment = moment(currentDate);
+    const payloadDateMoment = moment(payloadDate);
+    const differenceInDays = currentDateMoment.diff(payloadDateMoment, 'days');
+
+    return differenceInDays > 3;
+}
+
  
 module.exports = {
     breakDownCurrentTime,
@@ -106,5 +115,6 @@ module.exports = {
     formatToRTFC,
     handleError,
     parseTimeAndAdd,
-    mapReturnData
+    mapReturnData,
+    isDateMoreThanThreeDaysEarlier
 }
