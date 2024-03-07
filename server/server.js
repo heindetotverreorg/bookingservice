@@ -15,32 +15,32 @@ app.use(express.static(path.join(__dirname, '../dist')));
 
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist/index.html'));
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 app.post('/book', async (req, res) => {
-  const { date, time, people, test } = req.body
-  const data = await bookPadel(date, time, people, test)
-  res.send(data)
+    const { date, time, people, test } = req.body
+    const data = await bookPadel(date, time, people, test)
+    res.send(data)
 })
 
 app.post('/book-start-scheduled-booking', async (req, res) => {
-  const { date, time, people, test, testDateTime } = req.body
-  const data = await startJob(date, time, testDateTime, people, test)
-  res.send(data)
+    const { date, time, people, test, testDateTime } = req.body
+    const data = await startJob(date, time, testDateTime, people, test)
+    res.send(data)
 })
 
 app.post('/book-stop-scheduled-booking', async (req, res) => {
-  const data = await cancelJob()
-  res.send(data)
+    const data = await cancelJob()
+    res.send(data)
 })
 
 app.post('/book-check-scheduled-booking', async (req, res) => {
-  const data = await checkJob()
-  res.send(data)
+    const data = await checkJob()
+    res.send(data)
 })
 
 
 app.listen(port, () => {
-  console.log(`App listening on port ${port}`)
+    console.log(`App listening on port ${port}`)
 })
