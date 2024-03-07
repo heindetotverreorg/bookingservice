@@ -78,9 +78,6 @@ const isDateMoreThanThreeDaysEarlier = (payloadDate) => {
     const currentDateMoment = moment()
     const payloadDateMoment = moment(payloadDate);
     const differenceInDays = currentDateMoment.diff(payloadDateMoment, 'days');
-    console.log('now: ', currentDateMoment)
-    console.log('payload date', payloadDateMoment)
-    console.log('difference', differenceInDays )
 
     return differenceInDays <= -3;
 }
