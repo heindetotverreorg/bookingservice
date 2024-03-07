@@ -9,7 +9,7 @@ const {
 
 const init = async (page, freshBrowser, url) => {
     browser = freshBrowser
-    page.setDefaultTimeout(6000);
+    page.setDefaultTimeout(3000);
     await page.goto(url);
 }
 

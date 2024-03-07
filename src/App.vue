@@ -15,20 +15,26 @@
   <div v-if="testValue">
     <label for="test-time">test moment for cron</label>
     <select
-          name="time"
-          id="test-time"
-          v-model="testTime"
-        >
-          <option value="">--Please choose an option for the cron job to run during a test--</option>
-          <option
-            v-for="time of timeOptions()"
-            :key="time"
-            :selected="time === testTime"
-            :value="time"
-          >
-            {{ time }}
-          </option>
-        </select>
+      name="time"
+      id="test-time"
+      v-model="testTime"
+    >
+      <option value="">--Please choose an option for the cron job to run during a test--</option>
+      <option
+        v-for="time of timeOptions()"
+        :key="time"
+        :selected="time === testTime"
+        :value="time"
+      >
+        {{ time }}
+      </option>
+    </select>
+    <div class="inline">
+      <h2>Gepland reserveren {{ presentationDate }} - {{ defaultTime }}</h2>
+    </div>
+    <div>
+      <button @click="reserve({ schedule: 'set' })">Zet geplande reservering aan</button>
+    </div>
   </div>
   <div class="m-t-1">
     <div>
@@ -59,23 +65,17 @@
         </select>
       </div>
     </div>
-    <h2>Direct reserveren om {{ presentationDate }} - {{ defaultTime }}:</h2>
+    <h2>Reserveren om {{ presentationDate }} - {{ defaultTime }}:</h2>
     <div class="m-t-1">
       <button @click="reserve({ schedule: 'direct' })">Reserveren</button>
     </div>
   </div>
   <div class="m-t-1">
-    <div class="inline">
-      <h2>Gepland reserveren {{ presentationDate }} - {{ defaultTime }}</h2>
-    </div>
-    <div>
-      <button @click="reserve({ schedule: 'set' })">Zet geplande reservering aan</button>
+    <div class="m-t-1">
+      <button @click="reserve({ schedule: 'cancel' })">Annuleer reservering</button>
     </div>
     <div class="m-t-1">
-      <button @click="reserve({ schedule: 'cancel' })">Annuleer geplande reservering</button>
-    </div>
-    <div class="m-t-1">
-      <button @click="reserve({ schedule: 'check' })">Controleer geplande reservering</button>
+      <button @click="reserve({ schedule: 'check' })">Controleer reservering</button>
     </div>
   </div>
   <div>

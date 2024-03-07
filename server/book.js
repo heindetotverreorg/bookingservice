@@ -70,8 +70,11 @@ const bookPadel = async (date, time, people, test, cron = false) => {
             secondEndTime
         )
     } catch (error) {
+        if (browser) {
+            await browser.close();
+        }
         log(LOGGING.ERROR, error)
-        responseData.error = error
+        return { error }
     }
     
     if (browser) {

@@ -74,6 +74,17 @@ const handleError = (params, browser) => {
     throw `${params.message} ${params.body} ${params.error}`
 }
 
+const isDateMoreThanThreeDaysEarlier = (payloadDate) => {
+    const currentDateMoment = moment()
+    const payloadDateMoment = moment(payloadDate);
+    const differenceInDays = currentDateMoment.diff(payloadDateMoment, 'days');
+    console.log('now: ', currentDateMoment)
+    console.log('payload date', payloadDateMoment)
+    console.log('difference', differenceInDays )
+
+    return differenceInDays <= -3;
+}
+
 const parseTimeAndAdd = (time, addOneHour) => {
     const minutesToAdd = 30
     const [ hours, minutes ] = time.split(':')
@@ -95,15 +106,6 @@ const mapReturnData = (courtFirstBooking, courtSecondBooking, timeFirstBooking, 
         bookedDate: `Booked date: ${date}`
     }
 }
-
-const isDateMoreThanThreeDaysEarlier = (currentDate, payloadDate) => {
-    const currentDateMoment = moment(currentDate);
-    const payloadDateMoment = moment(payloadDate);
-    const differenceInDays = currentDateMoment.diff(payloadDateMoment, 'days');
-
-    return differenceInDays > 3;
-}
-
  
 module.exports = {
     breakDownCurrentTime,

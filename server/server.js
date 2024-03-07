@@ -8,6 +8,7 @@ const port = process.env.VUE_APP_SEVERPORT || 3001
 
 const { bookPadel } = require('./book')
 const { startJob, cancelJob, checkJob } = require('./cron')
+const { isDateMoreThanThreeDaysEarlier } = require('./utils')
 
 app.use(cors())
 app.use(express.json())
@@ -19,8 +20,10 @@ app.get('/', (req, res) => {
 });
 
 app.post('/book', async (req, res) => {
-    const { date, time, people, test } = req.body
-    const data = await bookPadel(date, time, people, test)
+    const { date, time, people, test, testDateTime } = req.body
+    const data = isDateMoreThanThreeDaysEarlier(date)
+        ? await startJob(date, time, testDateTime, people, test)
+        : await bookPadel(date, time, people, test)
     res.send(data)
 })
 
