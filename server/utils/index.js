@@ -68,7 +68,7 @@ const formatToRTFC = (moment) => {
 }
 
 const handleError = (params, browser) => {
-    console.log('ERROR')
+    console.log('====> ERROR <=== || log and close browser')
     console.log(params)
     browser.close()
     throw `${params.message} ${params.body} ${params.error}`

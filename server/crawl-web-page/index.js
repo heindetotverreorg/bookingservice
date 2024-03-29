@@ -13,19 +13,17 @@ const init = async (page, freshBrowser, url) => {
     await page.goto(url);
 }
 
-const login = async (page) => {
-    const login = 'mpoortvliet8570'
-    const pw = '10*Matthias'
+const login = async (page, loginName, loginPassword) => {
     try {
       await page.waitForSelector('input[name="username"]')
-      await page.evaluate((login, pw) => {
-          document.querySelector('input[name="username"]').value = login;
-          document.querySelector('input[name="password"]').value = pw;
-      }, login, pw)
+      await page.evaluate((loginName, loginPassword) => {
+          document.querySelector('input[name="username"]').value = loginName;
+          document.querySelector('input[name="password"]').value = loginPassword;
+      }, loginName, loginPassword)
       await page.click('.button3')
       await delay(1000)
     } catch(error) {
-      handleError({ message: `error: couldnt login with info: `, body: `${login} ${pw}`, error }, browser)
+      handleError({ message: `error: couldnt login with info: `, body: `${loginName} ${loginPassword}`, error }, browser)
     }
 }
 
@@ -68,8 +66,6 @@ const selectCourtAndTime = async (page, time, pass, court = 4) => {
     const [hours, minutes] = time.split(':')
     let newtime = hours.length === 1 ? `0${hours}:${minutes}` : `${hours}:${minutes}`
 
-    console.log('ATTEMPT', attempt)
-
     try {
         const courtSelector = `tr[data-time="${newtime}"] [title="Padel Buiten ${court}"]`
         const selectedCourt = await page.waitForSelector(courtSelector);
@@ -92,7 +88,6 @@ const selectCourtAndTime = async (page, time, pass, court = 4) => {
         }
     } catch(error) {
         if (court !== 0) {
-            console.log(error)
             return await selectCourtAndTime(page, time, pass, court - 1)
         } else {
             // if the chosen timeslot isnt available, we try for one full hour later
@@ -172,35 +167,36 @@ const getEndTime = async (page) => {
 
 const selectPeople = async (page, people) => {
     try {
-      const selectPerson = async (people) => people.forEach(async (person, index) => {
-          if (index === people.length) return
+        const selectPerson = async (people) => people.forEach(async (person, index) => {
+            if (index === people.length) return
 
-          // offset because of booking website's weird counting and first person is bookee
-          const newIndex = index + 2
+            // offset because of booking website's weird counting and first person is bookee
+            const newIndex = index + 2
 
-          const selector = `[name="players[${newIndex}]"]`
+            const selector = `[name="players[${newIndex}]"]`
 
-          const options = await page.evaluate(({ selector }) => {
-              const selectEl = document.querySelector(selector)
-              if (selectEl) {
-                  const options = [...selectEl.options]
-                  return options.map(option => ({ text: option.text, searchValue: option.value }))
-              }
-          }, { selector })
 
-          const filteredOptions = options?.reduce((acc, option) => {
-              const duplicateOption = acc.find(accOption => accOption.text === option.text)
-              if (duplicateOption) {
-                  // pick last of duplicates because Patrick's second account is the correct one
-                  // can be deleted when all accounts are sorted
-                  duplicateOption.searchValue = option.searchValue
-                  return acc
-              }
-              if (!option.searchValue || option.searchValue < 1) {
-                return acc
-              }
-              return [ ...acc, option ]
-          }, [])
+            const options = await page.evaluate(({ selector }) => {
+                const selectEl = document.querySelector(selector)
+                if (selectEl) {
+                    const options = [...selectEl.options]
+                    return options.map(option => ({ text: option.text, searchValue: option.value }))
+                }
+            }, { selector })
+
+            const filteredOptions = options?.reduce((acc, option) => {
+                const duplicateOption = acc.find(accOption => accOption.text === option.text)
+                if (duplicateOption) {
+                    // pick last of duplicates because Patrick's second account is the correct one
+                    // can be deleted when all accounts are sorted
+                    duplicateOption.searchValue = option.searchValue
+                    return acc
+                }
+                if (!option.searchValue || option.searchValue < 1) {
+                    return acc
+                }
+                return [ ...acc, option ]
+            }, [])
 
             const selectedOption = filteredOptions?.find(option => option.text === person)
 

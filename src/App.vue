@@ -1,36 +1,46 @@
 <template>
   <h1>Reserveren padel</h1>
   <div>
-    <h3>accounts</h3>
-    <ul>
-      <li v-for="person of people" :key="person">
-        {{ person }}
+    <h3>Login</h3>
+    <div>
+      <input v-model="requestPayload.loginName" type="text" />
+    </div>
+    <div>
+      <input v-model="requestPayload.loginPassword" type="password" />
+    </div>
+  </div>
+  <div>
+    <h3>Accounts</h3>
+    <ul class="list">
+      <li v-for="person, index of people" :key="person">
+        <input v-model="requestPayload.people[index]" type="text" />
       </li>
     </ul>
   </div>
   <div>
+    <h3>Booking</h3>
     <label for="1">IS TEST</label>
-    <input type="checkbox" id="1" v-model="testValue" />
+    <input type="checkbox" id="1" v-model="requestPayload.isTestRun" />
   </div>
-  <div v-if="testValue">
+  <div v-if="requestPayload.isTestRun">
     <label for="test-time">test moment for cron</label>
     <select
       name="time"
       id="test-time"
-      v-model="testTime"
+      v-model="requestPayload.testRunTime"
     >
-      <option value="">--Please choose an option for the cron job to run during a test--</option>
+      <option value="">--Please choose a time for the cron job to run--</option>
       <option
         v-for="time of timeOptions()"
         :key="time"
-        :selected="time === testTime"
+        :selected="time === requestPayload.testRunTime"
         :value="time"
       >
         {{ time }}
       </option>
     </select>
     <div class="inline">
-      <h2>Gepland reserveren {{ presentationDate }} - {{ defaultTime }}</h2>
+      <h2>Gepland reserveren {{ presentationDate }} - {{ requestPayload.timeToBook }}</h2>
     </div>
     <div>
       <button @click="reserve({ schedule: 'set' })">Zet geplande reservering aan</button>
@@ -43,7 +53,7 @@
         <input
           type="date"
           id="date-select"
-          v-model="chosenDate"
+          v-model="requestPayload.dateToBook"
         />
       </div>
       <div>
@@ -51,13 +61,13 @@
         <select
           name="time"
           id="time-select"
-          v-model="defaultTime"
+          v-model="requestPayload.timeToBook"
         >
           <option value="">--Please choose an option--</option>
           <option
             v-for="time of timeOptions()"
             :key="time"
-            :selected="time === defaultTime"
+            :selected="time === requestPayload.timeToBook"
             :value="time"
           >
             {{ time }}
@@ -65,7 +75,7 @@
         </select>
       </div>
     </div>
-    <h2>Reserveren om {{ presentationDate }} - {{ defaultTime }}:</h2>
+    <h2>Reserveren op {{ presentationDate }} - {{ requestPayload.timeToBook }}:</h2>
     <div class="m-t-1">
       <button @click="reserve({ schedule: 'direct' })">Reserveren</button>
     </div>
@@ -91,27 +101,39 @@
 import axios from 'axios'
 import moment from 'moment';
 import momentTimezone from 'moment-timezone'
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, reactive } from 'vue'
+
+  const people = [
+    'Jonathan Ouwehand',
+    'Patrick Gieling',
+    'Ricky de Haan',
+    'Matthias Poortvliet'
+  ]
 
   const bookingResult = ref(null)
-  const chosenDate = ref('')
-  const defaultTime = ref('19:00')
-  const testValue = ref(false)
   const isLoading = ref(false)
-  const testTime = ref('11:00')
+  const requestPayload = reactive({
+    loginName: 'mpoortvliet8570',
+    loginPassword: '10*Matthias',
+    people,
+    isTestRun: false,
+    testRunTime: '11:00',
+    dateToBook: '',
+    timeToBook: '19:00'
+  })
 
   onMounted(() => {
     date()
   })
 
   const presentationDate = computed(() => {
-    return moment(chosenDate.value).format('dddd DD-MM-YYYY')
+    return moment(requestPayload.dateToBook).format('dddd DD-MM-YYYY')
   })
 
   const date = () => {
     const today = moment()
     today.add(3, 'days')
-    chosenDate.value = today
+    requestPayload.dateToBook = today.format('YYYY-MM-DD')
   }
 
   const parsedResult = computed(() => {
@@ -124,13 +146,6 @@ import { onMounted, ref, computed } from 'vue'
     }
     return null
   })
-
-  const people = [
-    'Jonathan Ouwehand',
-    'Patrick Gieling',
-    'Ricky de Haan',
-    'Matthias Poortvliet' 
-  ]
 
   const timeOptions = () => {
     const arr = []
@@ -160,19 +175,15 @@ import { onMounted, ref, computed } from 'vue'
       url = `${process.env.VUE_APP_BOOKING_URL}-check-scheduled-booking`
     }
 
-    const date = formatToRTFC(momentTimezone(chosenDate.value).tz('Europe/Amsterdam'))
+    const date = formatToRTFC(momentTimezone(requestPayload.dateToBook).tz('Europe/Amsterdam'))
 
-    const testDateTime = createTestDateTimeMoment(testTime.value)
+    const testDateTime = createTestDateTimeMoment(requestPayload.testRunTime)
 
     const payload = {
-      date: date,
-      time: defaultTime.value,
-      people: people,
-      test: testValue.value,
+      ...requestPayload,
+      dateToBook: date,
       testDateTime: testDateTime
     }
-
-    console.log('LOGGING PAYLOAD', payload)
 
     try {
       isLoading.value = true
@@ -217,5 +228,10 @@ import { onMounted, ref, computed } from 'vue'
 
 .red {
   color: red;
+}
+
+.list {
+  list-style-type: none;
+  padding: 0;
 }
 </style>

@@ -16,7 +16,16 @@ const {
 
 let task
 
-const startJob = (date, time, testTimeDate, people, test) => {
+const startJob = (crawlPayload, testTimeDate, test) => {
+    if (task) {
+        cancelJob()
+    }
+
+    const {
+        date,
+        time
+    } = crawlPayload
+
     const bookingDateMinusThreeDays = moment(date).subtract(3, 'days')
     const rtfcFormattedDate = formatToRTFC(bookingDateMinusThreeDays)
     let cronExpression = dateTimeToCron(rtfcFormattedDate)
@@ -33,7 +42,7 @@ const startJob = (date, time, testTimeDate, people, test) => {
 
         try {
             await delay(delayValueMs)
-            await bookPadel(date, time, people, test, true)
+            await bookPadel(crawlPayload, test, true)
             cancelJob()
         } catch(error) {
             log(LOGGING.ERROR, error)

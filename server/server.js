@@ -20,16 +20,34 @@ app.get('/', (req, res) => {
 });
 
 app.post('/book', async (req, res) => {
-    const { date, time, people, test, testDateTime } = req.body
+    const {
+        loginName,
+        loginPassword,
+        dateToBook: date,
+        timeToBook: time,
+        people,
+        test,
+        testDateTime
+    } = req.body
+
     const data = isDateMoreThanThreeDaysEarlier(date)
-        ? await startJob(date, time, testDateTime, people, test)
-        : await bookPadel(date, time, people, test)
+        ? await startJob({ date, time, people, loginName, loginPassword }, testDateTime, test)
+        : await bookPadel({ date, time, people, loginName, loginPassword }, test)
     res.send(data)
 })
 
 app.post('/book-start-scheduled-booking', async (req, res) => {
-    const { date, time, people, test, testDateTime } = req.body
-    const data = await startJob(date, time, testDateTime, people, test)
+    const {
+        loginName,
+        loginPassword,
+        dateToBook: date,
+        timeToBook: time,
+        people,
+        isTestRun: test,
+        testDateTime
+    } = req.body
+
+    const data = await startJob({ date, time, people, loginName, loginPassword }, testDateTime, test)
     res.send(data)
 })
 

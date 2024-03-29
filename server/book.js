@@ -19,7 +19,7 @@ const {
     log
 } = require('./log')
 
-const bookPadel = async (date, time, people, test, cron = false) => { 
+const bookPadel = async ({ date, time, people, loginName, loginPassword }, test, cron = false) => { 
     if (cron) {
         const { hour, minute, seconds, writtenDay } = breakDownCurrentTime()
         log(LOGGING.START_CRON_JOB, { writtenDay, hour, minute, seconds })
@@ -42,7 +42,7 @@ const bookPadel = async (date, time, people, test, cron = false) => {
   
     try {
         await init(page, browser, URL_TO_CRAWL)
-        await login(page)
+        await login(page, loginName, loginPassword)
         await selectSport(page)
         await selectDate(page, dateToUse)
 
@@ -67,7 +67,8 @@ const bookPadel = async (date, time, people, test, cron = false) => {
             timeFirstBooking,
             timeSecondBooking,
             firstEndtime,
-            secondEndTime
+            secondEndTime,
+            date
         )
     } catch (error) {
         if (browser) {
