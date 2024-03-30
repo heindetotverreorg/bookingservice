@@ -167,50 +167,66 @@ const getEndTime = async (page) => {
 
 const selectPeople = async (page, people) => {
     try {
-        const selectPerson = async (people) => people.forEach(async (person, index) => {
-            if (index === people.length) return
+        const selectedPeople = []
 
-            // offset because of booking website's weird counting and first person is bookee
-            const newIndex = index + 2
+        const setValues = async () => {
+            for (const [index, person] of people.entries()) {
+                const selector = `[name="players[${index + 2}]"]`
+                await page.evaluate(async (person, selector) => {
+                    const el = document.querySelector(selector)
+                    if (el) {
+                        const parentEl = el.parentElement
+                        if (parentEl) {
+                            const inputEl = parentEl.querySelector('input')
+                            if (inputEl) {
+                                const inputEvent = new Event('input');
+                                inputEl.dispatchEvent(inputEvent);
+                                inputEl.value = person
+                            }
+                        }
+                    }
+                }, person, selector)
+                await delay(500)
+            }
+        }
 
-            const selector = `[name="players[${newIndex}]"]`
+        const checkValues = async () => {
+            for (const [index, person] of people.entries()) {
+                const selector = `[name="players[${index + 2}]"]`
+                const selectedPersonOptions = await page.evaluate(async (selectedPeople, person, selector) => {
+                    selectedPeople.push({ person })
+                    const el = document.querySelector(selector)
+                    if (el) {
+                        const options = [...el.options]
+                        return options.map(option => (option.text))
+                    }
+                }, selectedPeople, person, selector)
 
+                if (!selectedPersonOptions?.length) return
 
-            const options = await page.evaluate(({ selector }) => {
-                const selectEl = document.querySelector(selector)
-                if (selectEl) {
-                    const options = [...selectEl.options]
-                    return options.map(option => ({ text: option.text, searchValue: option.value }))
-                }
-            }, { selector })
+                // super stupid weird Patrick hack
+                const lastOption = person.includes('Patrick Gieling')
+                    ? selectedPersonOptions[selectedPersonOptions.length - 2]
+                    : selectedPersonOptions[selectedPersonOptions.length - 1]
 
-            const filteredOptions = options?.reduce((acc, option) => {
-                const duplicateOption = acc.find(accOption => accOption.text === option.text)
-                if (duplicateOption) {
-                    // pick last of duplicates because Patrick's second account is the correct one
-                    // can be deleted when all accounts are sorted
-                    duplicateOption.searchValue = option.searchValue
-                    return acc
-                }
-                if (!option.searchValue || option.searchValue < 1) {
-                    return acc
-                }
-                return [ ...acc, option ]
-            }, [])
+                const trimmedPerson = lastOption?.replace(' De', '')
+                if (trimmedPerson === person) {
 
-            const selectedOption = filteredOptions?.find(option => option.text === person)
-
-            if (selectedOption?.searchValue) {
-                const selectEl = await page.waitForSelector(selector)
-                if (selectEl.value !== selectedOption.searchValue) {
-                    await page.select(selector, selectedOption.searchValue)
-                    await delay(1000)
+                    selectedPeople.push(person)
                 }
             }
-        })
+        }
 
-        await selectPerson(people)
-        await page.waitForSelector('form')
+        await setValues()
+        await checkValues()
+
+        if (selectedPeople.length === people.length) {
+            await page.waitForSelector('form')
+        } else {
+            const difference = people.filter(person => !selectedPeople.includes(person));
+
+            throw `Couldnt select person(s): ${difference}`
+        }
         return 
     } catch (error) {
         handleError({ message: 'error: couldnt select people: ', body: people, error }, browser)
