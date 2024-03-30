@@ -106,7 +106,7 @@ import { onMounted, ref, computed, reactive } from 'vue'
   const people = [
     'Jonathan Ouwehand',
     'Patrick Gieling',
-    'Ricky de Haan'
+    'Ricky Haan'
   ]
 
   const bookingResult = ref(null)
@@ -183,6 +183,9 @@ import { onMounted, ref, computed, reactive } from 'vue'
       dateToBook: date,
       testDateTime: testDateTime
     }
+
+    // shouldnt do it like this but i cant be arsed right now
+    payload.people.forEach((person) => person = person.replace(' de', '').replace(' De', ''))
 
     try {
       isLoading.value = true

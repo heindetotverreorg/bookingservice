@@ -4,7 +4,7 @@ const removeLeadingZeroRegex = new RegExp("^0+(?!$)",'g');
 const {
     delay,
     handleError,
-    parseTimeAndAdd
+    parseTimeAndAdd,
 } = require('./../utils')
 
 const init = async (page, freshBrowser, url) => {
@@ -165,10 +165,11 @@ const getEndTime = async (page) => {
     }
 }
 
-const selectPeople = async (page, people) => {
+const selectPeople = async (page, people, nonMemberShipAccount, nonMemberShipAccountOffset = 1) => {
     try {
         const selectedPeople = []
 
+        // set values into input fields
         const setValues = async () => {
             for (const [index, person] of people.entries()) {
                 const selector = `[name="players[${index + 2}]"]`
@@ -181,7 +182,7 @@ const selectPeople = async (page, people) => {
                             if (inputEl) {
                                 const inputEvent = new Event('input');
                                 inputEl.dispatchEvent(inputEvent);
-                                inputEl.value = person
+                                inputEl.value = person.replace(' De', '').replace(' de', '')
                             }
                         }
                     }
@@ -190,39 +191,54 @@ const selectPeople = async (page, people) => {
             }
         }
 
-        const checkValues = async () => {
+        // check if values in select field are same as in input fields
+        const checkAndSelectValues = async () => {
             for (const [index, person] of people.entries()) {
                 const selector = `[name="players[${index + 2}]"]`
+
+                // get options from select
                 const selectedPersonOptions = await page.evaluate(async (selectedPeople, person, selector) => {
                     selectedPeople.push({ person })
                     const el = document.querySelector(selector)
                     if (el) {
                         const options = [...el.options]
-                        return options.map(option => (option.text))
+                        return options?.map(option => ({ text: option.text, value: option.value }))
                     }
                 }, selectedPeople, person, selector)
 
-                if (!selectedPersonOptions?.length) return
+                // fail safe return
+                if (!Array.isArray(selectedPersonOptions)) return
 
-                // super stupid weird Patrick hack
-                const lastOption = person.includes('Patrick Gieling')
-                    ? selectedPersonOptions[selectedPersonOptions.length - 2]
-                    : selectedPersonOptions[selectedPersonOptions.length - 1]
+                // first options are bogus, third option is value
+                const lastOption = selectedPersonOptions[selectedPersonOptions.length - 1]
 
-                const trimmedPerson = lastOption?.replace(' De', '')
-                if (trimmedPerson === person) {
+                // handle account selection based on membership status
+                if (person.replace(' De', '').replace(' de', '') === nonMemberShipAccount) {
+                    console.log('HAS NON MEMBERSHIP ACCOUNT IN PEOPLE FUNCTION: ', nonMemberShipAccount)
+                    const otherOption = selectedPersonOptions[selectedPersonOptions.length - nonMemberShipAccountOffset]
+                    await page.select(selector, otherOption.value)
+                } else {
+                    await page.select(selector, lastOption.value)
+                }
 
+                // trim account values to because something is off with names with 'de/De'
+                const trimmedPerson = person?.replace(' De', '').replace(' de', '')
+                const trimmedOption = lastOption.text?.replace(' De', '').replace(' de', '')
+                if (trimmedPerson === trimmedOption) {
                     selectedPeople.push(person)
                 }
             }
         }
 
         await setValues()
-        await checkValues()
+        await checkAndSelectValues()
 
+        // amount of selected people should be equal to the amount of people from the input
         if (selectedPeople.length === people.length) {
             await page.waitForSelector('form')
+            await page.click('#__make_submit')
         } else {
+            // get difference between selected people and people from input
             const difference = people.filter(person => !selectedPeople.includes(person));
 
             throw `Couldnt select person(s): ${difference}`
@@ -250,55 +266,87 @@ const selectCourtTimePeopleAndConfirm = async (pass, page, time, people, test, i
 
     await selectPeople(page, people)
 
-    await book(page, test)
+    const { nonMemberShipAccount, nonMemberShipAccountOffset } =  await book(page, people, test)
+
+    if (nonMemberShipAccount) {
+        await selectPeople(page, people, nonMemberShipAccount, nonMemberShipAccountOffset)
+    }
+
+    await book(page, people, test)
 
     return { court, time, endtime, isPeak }
 }
 
 
-const book = async (page, test = true) => {
+const book = async (page, people, nonMemberShipAccountOffset = 1, test = true) => {
     try {
-      // set event listener for dialog
-      page.on('dialog', async dialog => {
-          if (dialog) {
-            await dialog.dismiss();
-          }
-      })
+        // set event listener for dialog
+        page.on('dialog', async dialog => {
+            if (dialog) {
+                await dialog.dismiss();
+            }
+        })
 
-      await page.click('#__make_submit')
+        // important to actually close the dialog (if its present) or the worker wont shut down properly, so we delay a bit
+        await delay(1000)
 
-      // important to actually close the dialog (if its present) or the worker wont shut down properly, so we delay a bit
-      await delay(1000)
+        const els = await page.evaluate(() => {
+            const matches = document.querySelectorAll('th')
+            return [...matches].map(match => ({ text: match.innerText }))
+        })
 
-      const els = await page.evaluate(() => {
-          const matches = document.querySelectorAll('th')
-          return [...matches].map(match => ({ text: match.innerText }))
-      })
+        const isConfirmModalVisible = !!els.find(el => el.text.includes('Bevestig uw reservering'))
 
-      const isConfirmModalVisible = !!els.find(el => el.text.includes('Bevestig uw reservering'))
+        // important to actually wait for detecting of confirmDialog because on prod it doesnt always await the evaluate statement
+        await delay(1000)
 
-      // important to actually wait for detecting of confirmDialog because on prod it doesnt always await the evaluate statement
-      await delay(1000)
+        if (!isConfirmModalVisible) {
+            throw 'An error occurred while booking, confirm window not visible, check for double booking'
+        }
 
-      if (!isConfirmModalVisible) {
-          throw 'An error occurred while booking, confirm window not visible, check for double booking'
-      }
+        const checkForNonMemberShipAccount = async () => {
+            let nonMemberShipAccount = ''
+            for (const person of people.values()) {
+                const matches = await page.evaluate(async () => {
+                    const matches = document.querySelectorAll('td span')
+                    if (matches) {
+                        return [...matches].map(match => ({ text: match.innerText }))
+                    }
+                })
+                if (!Array.isArray(matches)) return 
 
-      if (test) {
-          console.log('TEST = SUCCESS')
-          await page.click('#__make_cancel2')
-          await delay(1000)
-          await page.click('#__make_cancel')
-          await delay(1000)
-      } else {
-          console.log('REAL BOOKING = SUCCESS')
-          await page.click('#__make_submit2')
-          await delay(1000)
-          await page.goBack()
-          await delay(1000)
-      }
-      
-      return
+                nonMemberShipAccount = matches?.find(el => el.text?.includes('NO MEMBERSHIP')) ? person : ''
+            }
+
+            return nonMemberShipAccount
+        }
+
+        const nonMemberShipAccount = await checkForNonMemberShipAccount()
+
+        if (nonMemberShipAccount) {
+            console.log('NON MEMBERSHIP ACCOUNT DETECTED, CANCELLING BOOKING')
+            nonMemberShipAccountOffset++
+            await page.click('#__make_cancel2')
+            await delay(1000)
+            
+            return { nonMemberShipAccount, nonMemberShipAccountOffset }
+        }
+
+        if (test) {
+            console.log('TEST = SUCCESS')
+            await page.click('#__make_cancel2')
+            await delay(1000)
+            await page.click('#__make_cancel')
+            await delay(1000)
+        } else {
+            console.log('REAL BOOKING = SUCCESS')
+            await page.click('#__make_submit2')
+            await delay(1000)
+            await page.goBack()
+            await delay(1000)
+        }
+        
+        return { nonMemberShipAccount }
     } catch (error) {
         handleError({ message: 'error: couldnt submit', body: '', error }, browser)
     }
