@@ -172,8 +172,6 @@ import { onMounted, ref, computed } from 'vue'
       testDateTime: testDateTime
     }
 
-    console.log('LOGGING PAYLOAD', payload)
-
     try {
       isLoading.value = true
       const { data } = await axios.post(url, payload)
