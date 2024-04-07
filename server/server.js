@@ -26,9 +26,11 @@ app.post('/book', async (req, res) => {
         dateToBook: date,
         timeToBook: time,
         people,
-        test,
+        isTestRun: test,
         testDateTime
     } = req.body
+
+    console.log(req.body)
 
     const data = isDateMoreThanThreeDaysEarlier(date)
         ? await startJob({ date, time, people, loginName, loginPassword }, testDateTime, test)

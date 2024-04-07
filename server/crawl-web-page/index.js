@@ -214,7 +214,7 @@ const selectPeople = async (page, people, nonMemberShipAccount, nonMemberShipAcc
 
                 // handle account selection based on membership status
                 if (person.replace(' De', '').replace(' de', '') === nonMemberShipAccount?.replace(' De', '').replace(' de', '') ) {
-                    const otherOption = selectedPersonOptions[selectedPersonOptions.length - nonMemberShipAccountOffset]
+                    const otherOption = selectedPersonOptions[selectedPersonOptions.length - (nonMemberShipAccountOffset + 1)]
                     await page.select(selector, otherOption.value)
                 } else {
                     await page.select(selector, lastOption.value)
@@ -277,12 +277,16 @@ const selectCourtTimePeopleAndConfirm = async (pass, page, time, people, test, i
 }
 
 
-const book = async (page, people, nonMemberShipAccountOffset = 1, test = true) => {
+const book = async (page, people, nonMemberShipAccountOffset = 1, test) => {
     try {
         // set event listener for dialog
-        page.on('dialog', async dialog => {
-            if (dialog) {
-                await dialog.dismiss();
+        page.once('dialog', async dialog => {
+            try {
+                if (dialog) {
+                    await dialog.dismiss();
+                }
+            } catch (error) {
+                console.log('ERROR ON DIALOG DISMISS')
             }
         })
 
@@ -328,7 +332,7 @@ const book = async (page, people, nonMemberShipAccountOffset = 1, test = true) =
             await page.click('#__make_cancel2')
             await delay(1000)
 
-            if (nonMemberShipAccountOffset > 2) {
+            if (nonMemberShipAccountOffset > 1) {
                 console.log('NON MMEBERSHIP ACCOUNT FOUND AFTER TWO ATTEMPTS, CANCELLING WHOLE BOOKING PROCESS')
                 throw `Couldnt find membership account for ${nonMemberShipAccount}`
             }
