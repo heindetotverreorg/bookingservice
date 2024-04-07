@@ -20,6 +20,7 @@ const {
 } = require('./log')
 
 const bookPadel = async ({ date, time, people, loginName, loginPassword }, test, cron = false) => { 
+    console.log('IS TEST: ', test)
     if (cron) {
         const { hour, minute, seconds, writtenDay } = breakDownCurrentTime()
         log(LOGGING.START_CRON_JOB, { writtenDay, hour, minute, seconds })

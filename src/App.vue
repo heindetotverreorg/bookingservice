@@ -21,8 +21,10 @@
     <h3>Booking</h3>
     <label for="1">IS TEST</label>
     <input type="checkbox" id="1" v-model="requestPayload.isTestRun" />
+    <label for="1">IS TEST TIME FOR CRON</label>
+    <input type="checkbox" id="1" v-model="requestPayload.isTestCron" />
   </div>
-  <div v-if="requestPayload.isTestRun">
+  <div v-if="requestPayload.isTestCron">
     <label for="test-time">test moment for cron</label>
     <select
       name="time"
@@ -116,7 +118,8 @@ import { onMounted, ref, computed, reactive } from 'vue'
     loginPassword: '10*Matthias',
     people,
     isTestRun: false,
-    testRunTime: '11:00',
+    isTestCron: false,
+    testRunTime: '',
     dateToBook: '',
     timeToBook: '19:00'
   })

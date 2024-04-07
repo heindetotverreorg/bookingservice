@@ -32,7 +32,7 @@ const startJob = (crawlPayload, testTimeDate, test) => {
 
     log(LOGGING.CRON_START)
 
-    if (test) {
+    if (testTimeDate) {
         cronExpression = dateTimeToCron(testTimeDate)
         log(LOGGING.CRON_TEST, cronExpression)
     }

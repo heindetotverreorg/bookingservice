@@ -47,6 +47,8 @@ app.post('/book-start-scheduled-booking', async (req, res) => {
         testDateTime
     } = req.body
 
+    console.log(req.body)
+
     const data = await startJob({ date, time, people, loginName, loginPassword }, testDateTime, test)
     res.send(data)
 })
