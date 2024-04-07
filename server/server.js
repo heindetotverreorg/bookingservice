@@ -32,7 +32,7 @@ app.post('/book', async (req, res) => {
 
     console.log(req.body)
 
-    const data = isDateMoreThanThreeDaysEarlier(date)
+    const data = testDateTime || isDateMoreThanThreeDaysEarlier(date)
         ? await startJob({ date, time, people, loginName, loginPassword }, testDateTime, test)
         : await bookPadel({ date, time, people, loginName, loginPassword }, test)
     res.send(data)
