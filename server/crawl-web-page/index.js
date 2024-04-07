@@ -213,7 +213,7 @@ const selectPeople = async (page, people, nonMemberShipAccount, nonMemberShipAcc
                 const lastOption = selectedPersonOptions[selectedPersonOptions.length - 1]
 
                 // handle account selection based on membership status
-                if (person.replace(' De', '').replace(' de', '') === nonMemberShipAccount) {
+                if (person.replace(' De', '').replace(' de', '') === nonMemberShipAccount?.replace(' De', '').replace(' de', '') ) {
                     console.log('HAS NON MEMBERSHIP ACCOUNT IN PEOPLE FUNCTION: ', nonMemberShipAccount)
                     const otherOption = selectedPersonOptions[selectedPersonOptions.length - nonMemberShipAccountOffset]
                     await page.select(selector, otherOption.value)
@@ -272,7 +272,7 @@ const selectCourtTimePeopleAndConfirm = async (pass, page, time, people, test, i
         await selectPeople(page, people, nonMemberShipAccount, nonMemberShipAccountOffset)
     }
 
-    await book(page, people, test)
+    await book(page, people, nonMemberShipAccountOffset, test)
 
     return { court, time, endtime, isPeak }
 }
@@ -324,10 +324,15 @@ const book = async (page, people, nonMemberShipAccountOffset = 1, test = true) =
         const nonMemberShipAccount = await checkForNonMemberShipAccount()
 
         if (nonMemberShipAccount) {
-            console.log('NON MEMBERSHIP ACCOUNT DETECTED, CANCELLING BOOKING')
             nonMemberShipAccountOffset++
+            console.log('NON MEMBERSHIP ACCOUNT FOUND: ', nonMemberShipAccount, nonMemberShipAccountOffset)
             await page.click('#__make_cancel2')
             await delay(1000)
+
+            if (nonMemberShipAccountOffset > 2) {
+                console.log('NON MMEBERSHIP ACCOUNT FOUND AFTER TWO ATTEMPTS, CANCELLING WHOLE BOOKING PROCESS')
+                throw `Couldnt find membership account for ${nonMemberShipAccount}`
+            }
             
             return { nonMemberShipAccount, nonMemberShipAccountOffset }
         }
