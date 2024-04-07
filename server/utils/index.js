@@ -2,7 +2,7 @@ const moment = require('moment-timezone');
 
 const breakDownCurrentTime = () => {
     const week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    const momentDate = moment()
+    const momentDate = moment().tz('Europe/Amsterdam')
     const day = momentDate.day()
     const hour = momentDate.hour()
     const minute = momentDate.minute()
