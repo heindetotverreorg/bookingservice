@@ -214,7 +214,6 @@ const selectPeople = async (page, people, nonMemberShipAccount, nonMemberShipAcc
 
                 // handle account selection based on membership status
                 if (person.replace(' De', '').replace(' de', '') === nonMemberShipAccount?.replace(' De', '').replace(' de', '') ) {
-                    console.log('HAS NON MEMBERSHIP ACCOUNT IN PEOPLE FUNCTION: ', nonMemberShipAccount)
                     const otherOption = selectedPersonOptions[selectedPersonOptions.length - nonMemberShipAccountOffset]
                     await page.select(selector, otherOption.value)
                 } else {
@@ -266,7 +265,7 @@ const selectCourtTimePeopleAndConfirm = async (pass, page, time, people, test, i
 
     await selectPeople(page, people)
 
-    const { nonMemberShipAccount, nonMemberShipAccountOffset } =  await book(page, people, test)
+    const { nonMemberShipAccount, nonMemberShipAccountOffset } =  await book(page, people, null, test)
 
     if (nonMemberShipAccount) {
         await selectPeople(page, people, nonMemberShipAccount, nonMemberShipAccountOffset)

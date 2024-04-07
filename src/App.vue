@@ -108,7 +108,7 @@ import { onMounted, ref, computed, reactive } from 'vue'
   const people = [
     'Jonathan Ouwehand',
     'Patrick Gieling',
-    'Ricky Haan'
+    'Ricky de Haan'
   ]
 
   const bookingResult = ref(null)
