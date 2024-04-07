@@ -27,21 +27,24 @@ const startJob = (crawlPayload, testTimeDate, test) => {
     } = crawlPayload
 
     const bookingDateMinusThreeDays = moment(date).subtract(3, 'days')
+    console.log('bookingDateMinusThreeDays', bookingDateMinusThreeDays)
     const rtfcFormattedDate = formatToRTFC(bookingDateMinusThreeDays)
+    console.log('rtfcFormattedDate', rtfcFormattedDate)
     let cronExpression = dateTimeToCron(rtfcFormattedDate)
+    console.log('cronExpression', cronExpression)
 
     log(LOGGING.CRON_START)
 
     if (testTimeDate) {
         cronExpression = dateTimeToCron(testTimeDate)
+        console.log('testTimeDate', testTimeDate)
+        console.log('testCronExpression', cronExpression)
         log(LOGGING.CRON_TEST, cronExpression)
     }
 
     task = cron.schedule(cronExpression, async () =>  {
-        const delayValueMs = 2000
-
         try {
-            await delay(delayValueMs)
+            await delay(2000)
             await bookPadel(crawlPayload, test, true)
             cancelJob()
         } catch(error) {

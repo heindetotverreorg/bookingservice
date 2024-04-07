@@ -184,8 +184,10 @@ import { onMounted, ref, computed, reactive } from 'vue'
     const payload = {
       ...requestPayload,
       dateToBook: date,
-      testDateTime: testDateTime
+      testDateTime: requestPayload.isTestCron ?  testDateTime : ''
     }
+
+    console.log(payload)
 
     // shouldnt do it like this but i cant be arsed right now
     payload.people.forEach((person) => person = person.replace(' de', '').replace(' De', ''))
