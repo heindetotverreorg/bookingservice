@@ -94,11 +94,11 @@ const selectCourtAndTime = async (page, time, pass, court = 4) => {
             // the booking website sometimes supports half hours, and sometimes doesnt so trying for one hour later is most valid
             const newtime = parseTimeAndAdd(time, true)
             attempt++
-            if (attempt < 3) {
+            if (attempt < 5) {
                 console.log(`NEW BOOKING ATTEMPT WITH NEW TIME: attempt: ${attempt} | time: ${newtime}`)
                 return await selectCourtAndTime(page, newtime, pass, 4)
             }
-            handleError({ message: `error: couldnt book court ${court} ${attempt ? 'after two attempts at different times  ' : ''}for timeslot: `, body: time, error }, browser)
+            handleError({ message: `error: couldnt book court ${court} ${attempt ? `after ${attempt - 1} attempts at different times  ` : ''}for timeslot: `, body: time, error }, browser)
             attempt = 0
         }
     }
