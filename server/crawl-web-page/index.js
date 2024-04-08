@@ -84,7 +84,8 @@ const selectCourtAndTime = async (page, time, pass, court = 4) => {
         attempt = 1
 
         return {
-           court
+           court,
+           bookedTime: time
         }
     } catch(error) {
         if (court !== 0) {
@@ -257,7 +258,9 @@ const selectCourtTimePeopleAndConfirm = async (pass, page, time, people, test, i
        time = parseTimeAndAdd(time, true)
     }
 
-    const { court } = await selectCourtAndTime(page, time, pass)
+    const { court, bookedTime } = await selectCourtAndTime(page, time, pass)
+
+    console.log(bookedTime)
 
     const { isPeak } = await checkForBookingType(page) 
 
@@ -273,7 +276,7 @@ const selectCourtTimePeopleAndConfirm = async (pass, page, time, people, test, i
 
     await book(page, people, nonMemberShipAccountOffset, test)
 
-    return { court, time, endtime, isPeak }
+    return { court, time: bookedTime, endtime, isPeak }
 }
 
 
