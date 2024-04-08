@@ -260,8 +260,6 @@ const selectCourtTimePeopleAndConfirm = async (pass, page, time, people, test, i
 
     const { court, bookedTime } = await selectCourtAndTime(page, time, pass)
 
-    console.log(bookedTime)
-
     const { isPeak } = await checkForBookingType(page) 
 
     const { endtime } = await getEndTime(page)
