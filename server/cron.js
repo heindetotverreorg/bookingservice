@@ -4,7 +4,6 @@ const { bookPadel } = require('./book')
 const {
     breakDownTaskDate,
     dateTimeToCron,
-    delay,
     formatToRTFC
 } = require('./utils');
 const {
@@ -44,7 +43,6 @@ const startJob = (crawlPayload, testTimeDate, test) => {
 
     task = cron.schedule(cronExpression, async () =>  {
         try {
-            await delay(2000)
             await bookPadel(crawlPayload, test, true)
             cancelJob()
         } catch(error) {
