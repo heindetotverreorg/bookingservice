@@ -82,6 +82,10 @@ const bookPadel = async ({ date, time, people, loginName, loginPassword }, test,
         await browser.close();
     }
 
+    if (cron) {
+        console.log(responseData)
+    }
+
     return responseData
 }
   
