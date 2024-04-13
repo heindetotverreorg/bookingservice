@@ -17,39 +17,10 @@
       </li>
     </ul>
   </div>
-  <div>
-    <h3>Booking</h3>
-    <label for="1">IS TEST</label>
-    <input type="checkbox" id="1" v-model="requestPayload.isTestRun" />
-    <label for="1">IS TEST TIME FOR CRON</label>
-    <input type="checkbox" id="1" v-model="requestPayload.isTestCron" />
-  </div>
-  <div v-if="requestPayload.isTestCron">
-    <label for="test-time">test moment for cron</label>
-    <select
-      name="time"
-      id="test-time"
-      v-model="requestPayload.testRunTime"
-    >
-      <option value="">--Please choose a time for the cron job to run--</option>
-      <option
-        v-for="time of timeOptions()"
-        :key="time"
-        :selected="time === requestPayload.testRunTime"
-        :value="time"
-      >
-        {{ time }}
-      </option>
-    </select>
-    <div class="inline">
-      <h2>Gepland reserveren {{ presentationDate }} - {{ requestPayload.timeToBook }}</h2>
-    </div>
-    <div>
-      <button @click="reserve({ schedule: 'set' })">Zet geplande reservering aan</button>
-    </div>
-  </div>
+
   <div class="m-t-1">
     <div>
+      <h3>Booking</h3>
       <div>
         <label for="date-select">Dag:</label>
         <input
@@ -88,6 +59,37 @@
     </div>
     <div class="m-t-1">
       <button @click="reserve({ schedule: 'check' })">Controleer reservering</button>
+    </div>
+  </div>
+  <div>
+    <h3>Testing</h3>
+    <label for="1">RUN AS TEST</label>
+    <input type="checkbox" id="1" v-model="requestPayload.isTestRun" />
+    <label for="2">RUN AT CUSTOM TIME</label>
+    <input type="checkbox" id="2" v-model="requestPayload.isTestCron" />
+  </div>
+  <div v-if="requestPayload.isTestCron">
+    <label for="test-time">test moment for cron</label>
+    <select
+      name="time"
+      id="test-time"
+      v-model="requestPayload.testRunTime"
+    >
+      <option value="">--Please choose a time for the cron job to run--</option>
+      <option
+        v-for="time of timeOptions()"
+        :key="time"
+        :selected="time === requestPayload.testRunTime"
+        :value="time"
+      >
+        {{ time }}
+      </option>
+    </select>
+    <div class="inline">
+      <h2>Gepland reserveren {{ presentationDate }} - {{ requestPayload.timeToBook }}</h2>
+    </div>
+    <div>
+      <button @click="reserve({ schedule: 'set' })">Zet geplande reservering aan</button>
     </div>
   </div>
   <div>
