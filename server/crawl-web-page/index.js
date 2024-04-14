@@ -287,6 +287,8 @@ const book = async (page, people, nonMemberShipAccountOffset = 1, test) => {
                     await dialog.dismiss();
                 }
             } catch (error) {
+                console.log(dialog.type())
+                console.log(dialog.message())
                 console.log('ERROR ON DIALOG DISMISS', error)
             }
         })
