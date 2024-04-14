@@ -281,7 +281,7 @@ const selectCourtTimePeopleAndConfirm = async (pass, page, time, people, test, i
 const book = async (page, people, nonMemberShipAccountOffset = 1, test) => {
     try {
         // set event listener for dialog
-        page.once('dialog', async dialog => {
+        page.on('dialog', async dialog => {
             try {
                 if (dialog) {
                     await dialog.dismiss();
