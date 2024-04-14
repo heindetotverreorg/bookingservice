@@ -284,6 +284,7 @@ const book = async (page, people, nonMemberShipAccountOffset = 1, test) => {
         page.once('dialog', async dialog => {
             try {
                 if (dialog) {
+                    console.log(dialog)
                     await dialog.dismiss();
                 }
             } catch (error) {
