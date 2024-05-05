@@ -211,19 +211,19 @@ const selectPeople = async (page, people, nonMemberShipAccount, nonMemberShipAcc
                 if (!Array.isArray(selectedPersonOptions)) return
 
                 // first options are bogus, third option is value
-                const lastOption = selectedPersonOptions[selectedPersonOptions.length - 1]
+                const matchedOptions = selectedPersonOptions?.filter(option => option.text === person)
 
                 // handle account selection based on membership status
                 if (person.replace(' De', '').replace(' de', '') === nonMemberShipAccount?.replace(' De', '').replace(' de', '') ) {
                     const otherOption = selectedPersonOptions[selectedPersonOptions.length - (nonMemberShipAccountOffset + 1)]
                     await page.select(selector, otherOption.value)
                 } else {
-                    await page.select(selector, lastOption.value)
+                    await page.select(selector, matchedOptions[0].value)
                 }
 
                 // trim account values to because something is off with names with 'de/De'
                 const trimmedPerson = person?.replace(' De', '').replace(' de', '')
-                const trimmedOption = lastOption.text?.replace(' De', '').replace(' de', '')
+                const trimmedOption = matchedOptions[0].text?.replace(' De', '').replace(' de', '')
                 if (trimmedPerson === trimmedOption) {
                     selectedPeople.push(person)
                 }
@@ -314,17 +314,30 @@ const book = async (page, people, nonMemberShipAccountOffset = 1, test) => {
             let nonMemberShipAccount = ''
             for (const person of people.values()) {
                 const matches = await page.evaluate(async () => {
-                    const matches = document.querySelectorAll('td span')
+                    const matches = document.querySelectorAll('td [name][value]')
+
                     if (matches) {
-                        return [...matches].map(match => ({ text: match.innerText }))
+                        return [...matches].map(match => {
+                            const parent = match.parentElement
+
+                            return { match: parent?.innerText.split('\n') }
+                        })
                     }
-                })
+                }, person)
                 if (!Array.isArray(matches)) return 
 
-                nonMemberShipAccount = matches?.find(el => el.text?.includes('NO MEMBERSHIP')) ? person : ''
+                nonMemberShipAccount = matches?.find(({ match }) => {
+                    if (match.length !== 2) return
+
+                    const [person, status] = match
+
+                    if (status.includes('NO MEMBERSHIP')) {
+                        return person
+                    }
+                })
             }
 
-            return nonMemberShipAccount
+            return nonMemberShipAccount ? nonMemberShipAccount['match'][0] : null
         }
 
         const nonMemberShipAccount = await checkForNonMemberShipAccount()
