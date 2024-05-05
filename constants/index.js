@@ -1,5 +1,7 @@
 const URL_TO_CRAWL = 'https://bent.baanreserveren.nl/reservations'
 
+const URL_TO_POST = 'https://bent.baanreserveren.nl/reservations/confirm'
+
 const LOGGING = {
     CRON_CANCELLED: 'CRON_CANCELLED',
     CRON_JOB_RUNS_AT: 'CRON_JOB_RUNS_AT',
@@ -14,5 +16,6 @@ const LOGGING = {
 
 module.exports = {
     LOGGING,
-    URL_TO_CRAWL
+    URL_TO_CRAWL,
+    URL_TO_POST
 }

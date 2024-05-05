@@ -19,6 +19,14 @@ const {
     log
 } = require('./log')
 
+const browserConfig = {
+    headless: process.env.NODE_ENV === 'production' ? true : false,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    env: {
+        DISPLAY: ":10.0"
+    }
+}
+
 const bookPadel = async ({ date, time, people, loginName, loginPassword }, test, cron = false) => { 
     if (cron) {
         const { hour, minute, seconds, writtenDay } = breakDownCurrentTime()
@@ -29,13 +37,6 @@ const bookPadel = async ({ date, time, people, loginName, loginPassword }, test,
     let pass = 0
 
     const dateToUse = convertFormattedDateToTimezonedDate(date)
-    const browserConfig = {
-        headless: process.env.NODE_ENV === 'production' ? true : false,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        env: {
-            DISPLAY: ":10.0"
-        }
-    }
 
     const browser = await puppeteer.launch(browserConfig);
     const page = await browser.newPage();
@@ -88,7 +89,36 @@ const bookPadel = async ({ date, time, people, loginName, loginPassword }, test,
 
     return responseData
 }
+
+const loginAndGetCookies = async ({loginName, loginPassword}) => {
+    const browser = await puppeteer.launch(browserConfig);
+    const page = await browser.newPage();
+    await init(page, browser, URL_TO_CRAWL)
+
+    try {
+        await login(page, loginName, loginPassword)
+
+        const cookies = await page.cookies()
+
+        if (browser) {
+            await browser.close();
+        }
+
+        return cookies
+    } catch (error) {
+
+        if (browser) {
+            await browser.close();
+        }
+        
+        return error
+    }
+
+
+    
+}
   
 module.exports = {
-    bookPadel
+    bookPadel,
+    loginAndGetCookies,
 }

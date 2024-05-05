@@ -6,7 +6,8 @@ const path = require('path');
 const cors = require('cors')
 const port = process.env.VUE_APP_SEVERPORT || 3001
 
-const { bookPadel } = require('./book')
+const { bookPadel, loginAndGetCookies } = require('./book')
+const { makeApiRequestBooking } = require('./make-api-requests') 
 const { startJob, cancelJob, checkJob } = require('./cron')
 const { isDateMoreThanThreeDaysEarlier } = require('./utils')
 
@@ -65,6 +66,29 @@ app.post('/book-check-scheduled-booking', async (req, res) => {
     res.send(data)
 })
 
+app.post('/login-get-cookie', async (req, res) => {
+    const {
+        loginName,
+        loginPassword
+    } = req.body
+
+    const data = await loginAndGetCookies({ loginName, loginPassword })
+    res.send(data)
+})
+
+app.post('/make-api-requests', async (req, res) => {
+    const {
+        params
+    } = req.body
+
+    const {
+        loginName,
+        loginPassword
+    } = params
+
+    const data = await makeApiRequestBooking({ loginName, loginPassword, params })
+    res.send(data)
+})
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
