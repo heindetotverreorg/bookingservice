@@ -166,7 +166,8 @@ const getEndTime = async (page) => {
     }
 }
 
-const selectPeople = async (page, people, nonMemberShipAccount, nonMemberShipAccountOffset = 1) => {
+const selectPeople = async (page, people, nonMemberShipAccount, nonMemberShipAccountOffset) => {
+    console.log(nonMemberShipAccount, nonMemberShipAccountOffset)
     try {
         const selectedPeople = []
 
@@ -215,7 +216,7 @@ const selectPeople = async (page, people, nonMemberShipAccount, nonMemberShipAcc
 
                 // handle account selection based on membership status
                 if (person.replace(' De', '').replace(' de', '') === nonMemberShipAccount?.replace(' De', '').replace(' de', '') ) {
-                    const otherOption = selectedPersonOptions[selectedPersonOptions.length - (nonMemberShipAccountOffset + 1)]
+                    const otherOption = selectedPersonOptions[selectedPersonOptions.length - (nonMemberShipAccountOffset)]
                     await page.select(selector, otherOption.value)
                 } else {
                     await page.select(selector, matchedOptions[0].value)
@@ -270,15 +271,14 @@ const selectCourtTimePeopleAndConfirm = async (pass, page, time, people, test, i
 
     if (nonMemberShipAccount) {
         await selectPeople(page, people, nonMemberShipAccount, nonMemberShipAccountOffset)
+        await book(page, people, nonMemberShipAccountOffset, test)
     }
-
-    await book(page, people, nonMemberShipAccountOffset, test)
 
     return { court, time: bookedTime, endtime, isPeak }
 }
 
 
-const book = async (page, people, nonMemberShipAccountOffset = 1, test) => {
+const book = async (page, people, nonMemberShipAccountOffset, test) => {
     try {
         // set event listener for dialog
         page.on('dialog', async dialog => {
