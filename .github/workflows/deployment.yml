@@ -24,7 +24,8 @@ jobs:
   publish:
     needs: test
     name: publish image
-    runs-on: self-hosted
+    # dont run on runner but on ubuntu
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Login
