@@ -3,6 +3,9 @@ on:
   push: 
     branches: 
       - main
+env:
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  IMAGE_NAME: ${{ secrets.DOCKER_NAMESPACE }}/bookingservice:latest
 jobs: 
   test: 
     runs-on: self-hosted
@@ -17,19 +20,16 @@ jobs:
         run: npm ci
       - name: Test
         run: npm test
-  deploy:
+  publish:
     needs: test
-    runs-on: self-hosted
+    name: publish image
+    runs-on: ubuntu-latest
     steps:
-      - name: Get code
-        uses: actions/checkout@v4
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - name: Install dependencies
-        run: npm ci
-      - name: Build
-        run: npm run build
-      - name: Deploy
-        run: echo "Deploying to production"
+    - uses: actions/checkout@v3
+    - name: Login
+      run: |
+        docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
+    - name: Build and Publish
+      run: |
+        docker build -t ${{ env.IMAGE_NAME }} .
+        docker push ${{ env.IMAGE_NAME }}
