@@ -1,8 +1,8 @@
 # Use an official Node.js runtime as the base image
-FROM node:14
+FROM node:18
 
-# Set the working directory in the container
-WORKDIR /
+RUN apt update -y && apt upgrade -y && useradd -m docker
+RUN cd /home/docker && mkdir bookingservice && cd bookingservice
 
 # Copy the rest of the application code to the working directory
 COPY . .
