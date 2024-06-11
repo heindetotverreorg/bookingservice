@@ -4,7 +4,7 @@ FROM --platform=linux/arm64 ubuntu:latest
 ENV VUE_APP_SEVERPORT=8080
 
 # update system add snap and add node user
-RUN apt update -y
+RUN apt update --allow-releaseinfo-change -y 
 RUN useradd -m node
 
 # install chromium
