@@ -4,11 +4,8 @@ FROM --platform=linux/arm64 ubuntu:latest
 ENV VUE_APP_SEVERPORT=8080
 
 # update system add snap and add node user
-RUN apt update -y && apt upgrade -y && useradd -m node
-
-# install deps
-# RUN apt install -y --no-install-recommends \
-# curl jq build-essential libssl-dev libffi-dev python3 python3-venv python3-dev python3-pip 
+RUN apt update -y
+RUN useradd -m node
 
 # install chromium
 RUN apt install chromium -y
