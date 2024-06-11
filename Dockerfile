@@ -1,5 +1,5 @@
 # platform is set for a arm device because the server i deploy this to is an arm server. update to you personal needs
-FROM --platform=linux/arm64 ubuntu:latest
+FROM ubuntu:latest
 
 ENV VUE_APP_SEVERPORT=8080
 
