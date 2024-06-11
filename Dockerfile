@@ -1,29 +1,14 @@
-# platform is set for a arm device because the server i deploy this to is an arm server. update to you personal needs
-FROM timbru31/node-chrome:slim
+FROM ghcr.io/puppeteer/puppeteer:22.10.1
 
 ENV VUE_APP_SEVERPORT=8080
 
-# update system add snap and add node user
-RUN apt update  -y 
-# RUN useradd -m node
+USER root
 
-# install chromium
-# RUN apt install chromium -y && apt install chromium-driver -y
-
-# install node
-# RUN apt install nodejs -y && apt install npm -y
-
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
-
-WORKDIR /home/node/app
-
-USER node
-
-COPY --chown=node:node package*.json ./
+COPY package*.json ./
 
 RUN npm install
 
-COPY --chown=node:node . .
+COPY . .
 
 RUN npm run build
 
