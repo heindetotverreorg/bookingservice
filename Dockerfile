@@ -1,17 +1,17 @@
 # platform is set for a arm device because the server i deploy this to is an arm server. update to you personal needs
-FROM ubuntu:latest
+FROM timbru31/node-chrome:slim
 
 ENV VUE_APP_SEVERPORT=8080
 
 # update system add snap and add node user
-RUN apt update --allow-releaseinfo-change -y 
-RUN useradd -m node
+RUN apt update  -y 
+# RUN useradd -m node
 
 # install chromium
-RUN apt install chromium -y
+# RUN apt install chromium -y && apt install chromium-driver -y
 
 # install node
-RUN apt install nodejs -y && apt install npm -y
+# RUN apt install nodejs -y && apt install npm -y
 
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 
