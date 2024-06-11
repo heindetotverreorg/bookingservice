@@ -24,7 +24,7 @@ jobs:
   publish:
     needs: test
     name: publish image
-    # dont run on runner but on ubuntu
+    # dont run on self hosted because of docker actions
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
