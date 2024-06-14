@@ -4,6 +4,7 @@ on:
   push: 
     branches: 
       - main
+  workflow_dispatch:
 env:
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   IMAGE_NAME: ${{ secrets.DOCKER_NAMESPACE }}/bookingservice:latest
