@@ -2,7 +2,7 @@ FROM ghcr.io/puppeteer/puppeteer:22.10.1
 
 ENV VUE_APP_SEVERPORT=8080
 
-USER heindetotverre
+USER root
 
 COPY package*.json ./
 
