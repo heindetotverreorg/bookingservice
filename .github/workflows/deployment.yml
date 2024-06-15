@@ -40,7 +40,7 @@ jobs:
     needs: publish
     name: Copy config and start service
     # dont run on self hosted because of docker actions
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v3
     - name: Copy config
