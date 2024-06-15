@@ -2,9 +2,7 @@ FROM --platform=arm64 node:16-alpine3.15
 
 USER root
 
-RUN apt update
-RUN apt install snapd -y
-
+RUN apk add 
 RUN apk add chromium
 
 WORKDIR /app
