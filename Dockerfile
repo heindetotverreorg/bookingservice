@@ -1,11 +1,11 @@
-FROM --platform=arm64 node:18
+FROM --platform=arm64 node:16-alpine3.15
 
 USER root
 
-RUN apt-get update \
- && apt-get install -y chromium \
-    fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
-    --no-install-recommends
+RUN apt update
+RUN apt install snapd -y
+
+RUN apk add chromium
 
 WORKDIR /app
 
