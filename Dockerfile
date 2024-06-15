@@ -1,4 +1,4 @@
-FROM node:18
+FROM --platform=arm64 node:18
 
 RUN apt-get update \
  && apt-get install -y chromium \

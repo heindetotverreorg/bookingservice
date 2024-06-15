@@ -30,6 +30,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+      # emulate arm to build image for arm64 based pi server, building image fails on x86/amd64 architecture. this makes building image very slow ~30mins
+    - uses: pguyot/arm-runner-action@v2
     - name: Login
       run: docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
     - name: Build and Publish
@@ -40,7 +42,7 @@ jobs:
     needs: publish
     name: Copy config and start service
     # dont run on self hosted because of docker actions
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Copy config
