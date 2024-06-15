@@ -9,3 +9,4 @@ services:
       - PROD_LIKE=true
     ports:
       - 8080:8080
+    command: npm run start
