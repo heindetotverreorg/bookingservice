@@ -2,11 +2,11 @@ FROM --platform=linux/arm64 node:18
 
 USER root
 
-RUN apt search chromium-browser \
-    apt install chromium-browser
+RUN apt search chromium-browser
+RUN apt install chromium-browser
 
-RUN apt-get update \
- && chromium --version
+RUN apt-get update
+RUN chromium --version
 
 WORKDIR /app
 
