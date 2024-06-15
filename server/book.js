@@ -30,7 +30,7 @@ const bookPadel = async ({ date, time, people, loginName, loginPassword }, test,
 
     const dateToUse = convertFormattedDateToTimezonedDate(date)
     const browserConfig = {
-        headless: process.env.NODE_ENV === 'production' ? true : false,
+        headless: process.env.PROD_LIKE ? true : false,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
         env: {
             DISPLAY: ":10.0"

@@ -1,5 +1,4 @@
-# dummy changes
-name: Project deploy
+name: Deploy bookingservice to pi
 on: 
   push: 
     branches: 
