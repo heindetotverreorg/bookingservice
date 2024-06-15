@@ -1,4 +1,4 @@
-FROM --platform=arm64 node:16-alpine3.15
+FROM --platform=linux/arm64 node:16-alpine3.15
 
 USER root
 
