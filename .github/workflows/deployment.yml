@@ -6,7 +6,9 @@ on:
   workflow_dispatch:
 env:
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  IMAGE_NAME: ${{ secrets.DOCKER_NAMESPACE }}/bookingservice:latest
+  IMAGE_PATH: ${{ secrets.DOCKER_NAMESPACE }}/bookingservice:latest
+  IMAGE_NAME: bookingservice
+  USER_NAME: ${{ secrets.DOCKER_NAMESPACE }}
 jobs: 
   test: 
     runs-on: self-hosted
@@ -32,5 +34,34 @@ jobs:
       run: docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
     - name: Build and Publish
       run: |
-        docker build -t ${{ env.IMAGE_NAME }} .
-        docker push ${{ env.IMAGE_NAME }}
+        docker build -t ${{ env.IMAGE_PATH }} .
+        docker push ${{ env.IMAGE_PATH }}
+  deploy:
+    needs: publish
+    name: Copy config and start service
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v3
+    - name: Copy config
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ env.USER_NAME}}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "*.yml"
+        target: "~/${{ env.IMAGE_NAME }}/"
+        timeout: 20s
+    - name: Start service
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ env.USER_NAME}}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd ${{ env.IMAGE_NAME }}
+          docker compose down
+          docker system purge -y 
+          ORG=${{ secrets.ORG_NAME}}
+          TOKEN=${{ secrets.ORG_ACCESS_KEY}}
+          docker compose up -d 
+          exit

@@ -1,0 +1,11 @@
+services:
+  bookingservice:
+    image: heindetotverre/bookingservice:latest
+    restart: unless-stopped
+    environment:
+      - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+      - VUE_APP_SERVERPORT=8080
+      - PROD_LIKE=true
+    ports:
+      - 8080:8080
