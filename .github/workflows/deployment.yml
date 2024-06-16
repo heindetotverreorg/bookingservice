@@ -55,33 +55,13 @@ jobs:
         mkdir -p ~/${{ env.IMAGE_NAME }}
         ENDSSH
         scp -o StrictHostKeyChecking=no -r ./compose.yml ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }}:~/${{ env.IMAGE_NAME }}/
-      # run: |
-      #   env
-      #   mkdir -p ~/.ssh
-      #   echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-      #   chmod 600 ~/.ssh/id_rsa
-      #   ssh-keyscan -p 22 ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
-      #   ssh -v -o StrictHostKeyChecking=no ${{ secrets.SERVER_HOST }} "mkdir -p ${{ env.IMAGE_NAME }}"
-      #   scp -o StrictHostKeyChecking=no -r ./compose.yml ${{ secrets.SERVER_HOST }}:/${{ env.IMAGE_NAME }}/
-    #   uses: appleboy/scp-action@v0.1.7
-    #   with:
-    #     host: ${{ secrets.SERVER_HOST }}
-    #     username: ${{ env.USER_NAME}}
-    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-    #     source: "*.yml"
-    #     target: "~/${{ env.IMAGE_NAME }}/"
-    #     timeout: 20s
-    # - name: Start service
-    #   uses: appleboy/ssh-action@v1.0.3
-    #   with:
-    #     host: ${{ secrets.SERVER_HOST }}
-    #     username: ${{ env.USER_NAME}}
-    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-    #     script: |
-    #       cd ${{ env.IMAGE_NAME }}
-    #       docker compose down
-    #       docker system purge -y 
-    #       ORG=${{ secrets.ORG_NAME}}
-    #       TOKEN=${{ secrets.ORG_ACCESS_KEY}}
-    #       docker compose up -d 
-    #       exit
+    - name: Start service
+      run: |
+        ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
+        cd ~/${{ env.IMAGE_NAME }}
+        docker-compose down
+        docker system prune -y
+        ORG=${{ secrets.ORG_NAME}}
+        TOKEN=${{ secrets.ORG_ACCESS_KEY}}
+        docker compose up -d 
+        exit
