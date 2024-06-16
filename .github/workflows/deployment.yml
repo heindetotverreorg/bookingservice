@@ -49,8 +49,11 @@ jobs:
     - name: Copy config
       run: |
         ls -ls
-        ssh -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no ${{ secrets.SERVER_HOST }} "mkdir -p ${{ env.IMAGE_NAME }}"
-        scp -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no -r ./compose.yml ${{ secrets.SERVER_HOST }}:/${{ env.IMAGE_NAME }}/
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh -i -o StrictHostKeyChecking=no ${{ secrets.SERVER_HOST }} "mkdir -p ${{ env.IMAGE_NAME }}"
+        scp -i -o StrictHostKeyChecking=no -r ./compose.yml ${{ secrets.SERVER_HOST }}:/${{ env.IMAGE_NAME }}/
     #   uses: appleboy/scp-action@v0.1.7
     #   with:
     #     host: ${{ secrets.SERVER_HOST }}
