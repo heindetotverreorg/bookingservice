@@ -11,6 +11,7 @@ env:
   USER_NAME: ${{ secrets.DOCKER_NAMESPACE }}
 jobs: 
   test: 
+    name: Unit test suite
     runs-on: self-hosted
     steps: 
       - name: Get code
@@ -48,7 +49,8 @@ jobs:
     - name: Copy config
       run: |
         ls -ls
-        scp -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no -r ./*.yml ${{ secrets.SERVER_HOST }}:~/${{ env.IMAGE_NAME }}/
+        ssh -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no ${{ secrets.SERVER_HOST }} "mkdir -p ${{ env.IMAGE_NAME }}"
+        scp -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no -r ./compose.yml ${{ secrets.SERVER_HOST }}:/${{ env.IMAGE_NAME }}/
     #   uses: appleboy/scp-action@v0.1.7
     #   with:
     #     host: ${{ secrets.SERVER_HOST }}
