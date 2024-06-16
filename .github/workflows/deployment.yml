@@ -47,6 +47,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Copy config
       run: |
+        ls -ls
         scp -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no -r ./*.yml ${{ secrets.SERVER_HOST }}:~/${{ env.IMAGE_NAME }}/
     #   uses: appleboy/scp-action@v0.1.7
     #   with:
