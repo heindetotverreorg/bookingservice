@@ -51,8 +51,8 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh heindetotverre@178.85.83.175 -p 22 -v -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
-        ls -al
+        ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -v -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
+        mkdir -p ~/${{ env.IMAGE_NAME }}
         ENDSSH
       # run: |
       #   env
