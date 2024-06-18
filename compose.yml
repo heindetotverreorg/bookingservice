@@ -6,7 +6,7 @@ services:
     environment:
       - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
       - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-      - VUE_APP_SERVERPORT=8080
+      - VUE_APP_SERVERPORT=80
       - PROD_LIKE=true
     ports:
       - 8080:80
