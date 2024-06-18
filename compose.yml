@@ -9,5 +9,5 @@ services:
       - VUE_APP_SERVERPORT=8080
       - PROD_LIKE=true
     ports:
-      - 8080:8080
+      - 8080:80
     command: npm run start

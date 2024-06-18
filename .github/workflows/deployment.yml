@@ -59,9 +59,7 @@ jobs:
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
         cd ~/${{ env.IMAGE_NAME }}
-        docker-compose down
-        docker system prune -y
-        ORG=${{ secrets.ORG_NAME}}
-        TOKEN=${{ secrets.ORG_ACCESS_KEY}}
+        docker compose down
+        docker system prune -af
         docker compose up -d 
         exit
