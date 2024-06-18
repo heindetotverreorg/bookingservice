@@ -6,8 +6,8 @@ services:
     environment:
       - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
       - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-      - VUE_APP_SERVERPORT=80
+      - VUE_APP_SERVERPORT=3000
       - PROD_LIKE=true
     ports:
-      - 8080:80
+      - 8080:3000
     command: npm run start
