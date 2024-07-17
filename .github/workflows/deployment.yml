@@ -32,6 +32,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
     - name: Build and Publish image
+        # no need to setup ssh because the GitHub runner runs on the same domain as the server
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
         docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
