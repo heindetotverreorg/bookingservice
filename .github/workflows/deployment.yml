@@ -27,16 +27,17 @@ jobs:
   publish:
     needs: test
     name: Build image and publish to docker
-    # dont run on self hosted because of docker actions
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-    - uses: actions/checkout@v3
-      # emulate arm to build image for arm64 based pi server, building image fails on x86/amd64 architecture. this makes building image very slow ~30mins
-    - uses: pguyot/arm-runner-action@v2
-    - name: Login
-      run: docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
-    - name: Build and Publish
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build and Publish image
       run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
+        docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
         docker build -t ${{ env.IMAGE_PATH }} .
         docker push ${{ env.IMAGE_PATH }}
   deploy:
