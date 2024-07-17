@@ -33,9 +33,6 @@ jobs:
       uses: actions/checkout@v3
     - name: Build and Publish image
       run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
         docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
         docker build -t ${{ env.IMAGE_PATH }} .
@@ -49,9 +46,6 @@ jobs:
       uses: actions/checkout@v3
     - name: Copy config
       run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
         mkdir -p ~/${{ env.IMAGE_NAME }}
         ENDSSH
