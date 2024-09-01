@@ -1,4 +1,6 @@
-const port = process.env.VUE_APP_SERVERPORT || 3001
+const port = process.env.VUE_APP_SERVERPORT || 3003
+
+console.log('RUNTIME CHECK', process.env.VUE_APP_SERVERPORT)
 
 const URL_TO_CRAWL = 'https://bent.baanreserveren.nl/reservations'
 
