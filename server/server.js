@@ -4,7 +4,8 @@ const express = require('express')
 const app = express()
 const path = require('path');
 const cors = require('cors')
-const port = process.env.VUE_APP_SERVERPORT || 3001
+
+const { port } = require('../constants')
 
 const { bookPadel } = require('./book')
 const { startJob, cancelJob, checkJob } = require('./cron')

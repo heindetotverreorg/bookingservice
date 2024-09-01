@@ -106,6 +106,7 @@ import axios from 'axios'
 import moment from 'moment';
 import momentTimezone from 'moment-timezone'
 import { onMounted, ref, computed, reactive } from 'vue'
+import { SERVER_URL } from '../constants'
 
   const people = [
     'Jonathan Ouwehand',
@@ -167,16 +168,16 @@ import { onMounted, ref, computed, reactive } from 'vue'
     let url
 
     if (schedule === 'direct') {
-      url = `${process.env.VUE_APP_BOOKING_URL}`
+      url = `${SERVER_URL}`
     }
     if (schedule === 'set') {
-      url = `${process.env.VUE_APP_BOOKING_URL}-start-scheduled-booking`
+      url = `${SERVER_URL}-start-scheduled-booking`
     }
     if (schedule === 'cancel') {
-      url = `${process.env.VUE_APP_BOOKING_URL}-stop-scheduled-booking`
+      url = `${SERVER_URL}-stop-scheduled-booking`
     }
     if (schedule === 'check') {
-      url = `${process.env.VUE_APP_BOOKING_URL}-check-scheduled-booking`
+      url = `${SERVER_URL}-check-scheduled-booking`
     }
 
     const date = formatToRTFC(momentTimezone(requestPayload.dateToBook).tz('Europe/Amsterdam'))
@@ -200,6 +201,8 @@ import { onMounted, ref, computed, reactive } from 'vue'
       bookingResult.value = data
       isLoading.value = false
     } catch (error) {
+      console.log(error)
+      console.log('url` is', url)
       isLoading.value = false
     }
   }
