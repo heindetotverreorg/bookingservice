@@ -190,8 +190,6 @@ import { SERVER_URL } from '../constants'
       testDateTime: requestPayload.isTestCron ?  testDateTime : ''
     }
 
-    console.log(payload)
-
     // shouldnt do it like this but i cant be arsed right now
     payload.people.forEach((person) => person = person.replace(' de', '').replace(' De', ''))
 
