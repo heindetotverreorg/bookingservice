@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 env:
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  IMAGE_PATH: ${{ secrets.DOCKER_NAMESPACE }}/bookingservice:release
+  IMAGE_PATH: ${{ secrets.DOCKER_NAMESPACE }}/bookingservice:latest
   IMAGE_NAME: bookingservice
   USER_NAME: ${{ secrets.DOCKER_NAMESPACE }}
 jobs: 
@@ -15,7 +15,7 @@ jobs:
     runs-on: self-hosted
     steps: 
       - name: Get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
@@ -29,26 +29,13 @@ jobs:
     name: Build image and publish to docker
     runs-on: self-hosted
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Copy Dockerfile
-    # no need to setup ssh because the GitHub runner runs on the same domain as the server
-      run: |
-        ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
-        mkdir -p ~/${{ env.IMAGE_NAME }}
-        ENDSSH
-        scp -o StrictHostKeyChecking=no -r ./Dockerfile ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }}:~/${{ env.IMAGE_NAME }}/
     - name: Build and Publish image
+        # no need to setup ssh because the GitHub runner runs on the same domain as the server
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
-        cd ~/${{ env.IMAGE_NAME }}
-        docker compose down
-        docker system prune --all --force
         docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
         docker build -t ${{ env.IMAGE_PATH }} .
-        docker images
         docker push ${{ env.IMAGE_PATH }}
-        ENDSSH
   deploy:
     needs: publish
     name: Copy config and start service
@@ -56,28 +43,17 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    - name: Copy compose file
+    - name: Copy config
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
+        mkdir -p ~/${{ env.IMAGE_NAME }}
         ENDSSH
         scp -o StrictHostKeyChecking=no -r ./compose.yml ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }}:~/${{ env.IMAGE_NAME }}/
     - name: Start service
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
         cd ~/${{ env.IMAGE_NAME }}
+        docker compose down
+        docker system prune -af
         docker compose up -d 
         exit
-        ENDSSH
-  # nginx:
-  #   needs: deploy
-  #   name: Restart nginx webserver
-  #   runs-on: self-hosted
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v3
-  #   - name: Restart server
-  #     run: |
-  #       ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
-  #       mkdir -p ~/${{ env.IMAGE_NAME }}
-  #       ENDSSH
-  #       service nginx restart
