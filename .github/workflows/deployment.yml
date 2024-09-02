@@ -27,7 +27,7 @@ jobs:
         run: npm test
   deploy:
     needs: test
-    name: Build image and publish to docker
+    name: Checkout code and build and publish image
     runs-on: self-hosted
     steps:
       - name: Checkout Code
@@ -49,19 +49,18 @@ jobs:
           docker build -t ${{ env.IMAGE_PATH }} .
           docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
           docker push ${{ env.IMAGE_PATH }}
-          cd ..
-          rm -rf ${{ env.IMAGE_NAME }}
           ENDSSH
   start:
     needs: deploy
-    name: Copy config and start service
+    name: Restart the docker service
     runs-on: self-hosted
     steps:
-      - name: Start service
+      - name: Restart service
         run: |
           ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
           cd ~/${{ env.IMAGE_NAME }}
           docker compose down
           docker system prune -af
           docker compose up -d
-          exit
+          rm rf ~/${{ env.IMAGE_NAME }}
+          ENDSSH
