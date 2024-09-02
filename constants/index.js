@@ -2,7 +2,7 @@ const port = process.env.VUE_APP_SERVERPORT || 3003
 
 const URL_TO_CRAWL = 'https://bent.baanreserveren.nl/reservations'
 
-const SERVER_URL = `http://localhost:${port}/book`
+const SERVER_URL = `/book`
 
 const LOGGING = {
     CRON_CANCELLED: 'CRON_CANCELLED',
