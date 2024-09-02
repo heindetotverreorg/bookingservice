@@ -36,12 +36,15 @@ jobs:
           # no need to setup ssh because the GitHub runner runs on the same domain as the server
         run: |
           ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
-          cd ~/
-          git clone ${{ env.REPO }}
-          cd ~/${{ env.IMAGE_PATH }}
+          mkdir -p ~/${{ env.IMAGE_NAME }}
+          cd ~/${{ env.IMAGE_NAME }}
+          git remote add origin ${{ env.REPO }}
+          git fetch origin
+          git checkout main
           docker build -t ${{ env.IMAGE_PATH }} .
           docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
           docker push ${{ env.IMAGE_PATH }}
+          cd ..
           rm -rf ${{ env.IMAGE_NAME }}
   deploy:
     needs: publish
@@ -62,5 +65,5 @@ jobs:
         cd ~/${{ env.IMAGE_NAME }}
         docker compose down
         docker system prune -af
-        docker compose up -d 
+        docker compose up -d
         exit
