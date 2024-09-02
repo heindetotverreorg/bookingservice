@@ -15,7 +15,7 @@ jobs:
     runs-on: self-hosted
     steps: 
       - name: Get code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
@@ -30,7 +30,7 @@ jobs:
     runs-on: self-hosted
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
     - name: Copy Dockerfile
     # no need to setup ssh because the GitHub runner runs on the same domain as the server
       run: |
@@ -55,7 +55,7 @@ jobs:
     runs-on: self-hosted
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
     - name: Copy compose file
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
