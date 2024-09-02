@@ -25,13 +25,13 @@ jobs:
         run: npm ci
       - name: Test
         run: npm test
-  publish:
+  deploy:
     needs: test
     name: Build image and publish to docker
     runs-on: self-hosted
     steps:
-      - name: Build and Publish image
-          # no need to setup ssh because the GitHub runner runs on the same domain as the server
+      - name: Checkout Code
+      # no need to setup ssh because the GitHub runner runs on the same domain as the server
         run: |
           ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
           rm -rf ${{ env.IMAGE_NAME }}
@@ -41,27 +41,27 @@ jobs:
           git remote add origin ${{ env.REPO }}
           git fetch origin
           git checkout main
+          ENDSSH
+      - name: Build and Publish image
+        run: |
+          ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
+          cd ~/${{ env.IMAGE_NAME }}
           docker build -t ${{ env.IMAGE_PATH }} .
           docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
           docker push ${{ env.IMAGE_PATH }}
           cd ..
           rm -rf ${{ env.IMAGE_NAME }}
-  deploy:
-    needs: publish
+          ENDSSH
+  start:
+    needs: deploy
     name: Copy config and start service
     runs-on: self-hosted
     steps:
-    - name: Copy config
-      run: |
-        ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
-        mkdir -p ~/${{ env.IMAGE_NAME }}
-        ENDSSH
-        scp -o StrictHostKeyChecking=no -r ./compose.yml ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }}:~/${{ env.IMAGE_NAME }}/
-    - name: Start service
-      run: |
-        ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
-        cd ~/${{ env.IMAGE_NAME }}
-        docker compose down
-        docker system prune -af
-        docker compose up -d
-        exit
+      - name: Start service
+        run: |
+          ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
+          cd ~/${{ env.IMAGE_NAME }}
+          docker compose down
+          docker system prune -af
+          docker compose up -d
+          exit
