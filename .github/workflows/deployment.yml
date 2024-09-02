@@ -42,8 +42,10 @@ jobs:
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
         cd ~/${{ env.IMAGE_NAME }}
-        docker build -t ${{ env.IMAGE_PATH }} .
+        docker compose down
+        docker system prune --all --force
         docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
+        docker build -t ${{ env.IMAGE_PATH }} .
         docker images
         docker push ${{ env.IMAGE_PATH }}
         ENDSSH
@@ -63,8 +65,6 @@ jobs:
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
         cd ~/${{ env.IMAGE_NAME }}
-        docker compose down
-        docker system prune --all --force
         docker compose up -d 
         exit
         ENDSSH
