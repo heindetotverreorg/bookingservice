@@ -5,7 +5,6 @@ RUN apt-get update \
     fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
     --no-install-recommends
 
-# USER node # non-root user that comes with `node` images.
 USER root
 
 WORKDIR /app
