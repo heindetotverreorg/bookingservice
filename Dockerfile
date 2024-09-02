@@ -7,7 +7,7 @@ RUN apt-get update \
 
 USER root
 
-WORKDIR /app
+WORKDIR /
 
 COPY package.json .
 COPY package-lock.json .
