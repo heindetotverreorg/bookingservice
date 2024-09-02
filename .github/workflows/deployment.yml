@@ -29,20 +29,22 @@ jobs:
     name: Build image and publish to docker
     runs-on: self-hosted
     steps:
-    - name: Build and Publish image
-        # no need to setup ssh because the GitHub runner runs on the same domain as the server
-      run: |
-        ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
-        docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
-        docker build -t ${{ env.IMAGE_PATH }} .
-        docker push ${{ env.IMAGE_PATH }}
+      - name: Get code
+        uses: actions/checkout@v4
+      - name: Build and Publish image
+          # no need to setup ssh because the GitHub runner runs on the same domain as the server
+        run: |
+          ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
+          docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
+          docker build -t ${{ env.IMAGE_PATH }} .
+          docker push ${{ env.IMAGE_PATH }}
   deploy:
     needs: publish
     name: Copy config and start service
     runs-on: self-hosted
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Copy config
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
