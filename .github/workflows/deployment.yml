@@ -30,7 +30,7 @@ jobs:
     runs-on: self-hosted
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Copy Dockerfile
     # no need to setup ssh because the GitHub runner runs on the same domain as the server
       run: |
@@ -41,10 +41,9 @@ jobs:
     - name: Build and Publish image
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
-        docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
         cd ~/${{ env.IMAGE_NAME }}
-        ls
         docker build -t ${{ env.IMAGE_PATH }} .
+        docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
         docker push ${{ env.IMAGE_PATH }}
         ENDSSH
   deploy:
@@ -53,7 +52,7 @@ jobs:
     runs-on: self-hosted
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Copy compose file
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
