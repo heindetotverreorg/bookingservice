@@ -59,16 +59,16 @@ jobs:
         docker system prune -af
         docker compose up -d 
         exit
-  nginx:
-    needs: deploy
-    name: Restart nginx webserver
-    runs-on: self-hosted
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Restart server
-      run: |
-        ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
-        mkdir -p ~/${{ env.IMAGE_NAME }}
-        ENDSSH
-        service nginx restart
+  # nginx:
+  #   needs: deploy
+  #   name: Restart nginx webserver
+  #   runs-on: self-hosted
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v3
+  #   - name: Restart server
+  #     run: |
+  #       ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
+  #       mkdir -p ~/${{ env.IMAGE_NAME }}
+  #       ENDSSH
+  #       service nginx restart
