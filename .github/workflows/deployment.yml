@@ -34,6 +34,7 @@ jobs:
           # no need to setup ssh because the GitHub runner runs on the same domain as the server
         run: |
           ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
+          rm -rf ${{ env.IMAGE_NAME }}
           mkdir -p ~/${{ env.IMAGE_NAME }}
           cd ~/${{ env.IMAGE_NAME }}
           git init
