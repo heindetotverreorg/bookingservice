@@ -1,4 +1,4 @@
-FROM --platform=arm64 node:18
+FROM --platform=linux/arm64 node:18 AS build_arm64
 
 RUN apt-get update \
  && apt-get install -y chromium \

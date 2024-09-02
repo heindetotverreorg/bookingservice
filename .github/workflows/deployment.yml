@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 env:
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  IMAGE_PATH: ${{ secrets.DOCKER_NAMESPACE }}/bookingservice:latest
+  IMAGE_PATH: ${{ secrets.DOCKER_NAMESPACE }}/bookingservice:release
   IMAGE_NAME: bookingservice
   USER_NAME: ${{ secrets.DOCKER_NAMESPACE }}
 jobs: 
@@ -43,6 +43,7 @@ jobs:
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
         docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
         cd ~/${{ env.IMAGE_NAME }}
+        ls
         docker build -t ${{ env.IMAGE_PATH }} .
         docker push ${{ env.IMAGE_PATH }}
         ENDSSH
@@ -66,6 +67,7 @@ jobs:
         docker system prune --all --force
         docker compose up -d 
         exit
+        ENDSSH
   # nginx:
   #   needs: deploy
   #   name: Restart nginx webserver
