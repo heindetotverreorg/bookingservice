@@ -36,8 +36,8 @@ jobs:
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
         mkdir -p ~/${{ env.IMAGE_NAME }}
-        scp -o StrictHostKeyChecking=no -r ./Dockerfile ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }}:~/${{ env.IMAGE_NAME }}/
         ENDSSH
+        scp -o StrictHostKeyChecking=no -r ./Dockerfile ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }}:~/${{ env.IMAGE_NAME }}/
     - name: Build and Publish image
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
