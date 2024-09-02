@@ -30,14 +30,13 @@ jobs:
     name: Build image and publish to docker
     runs-on: self-hosted
     steps:
-      - name: Get code
-        uses: actions/checkout@v4
       - name: Build and Publish image
           # no need to setup ssh because the GitHub runner runs on the same domain as the server
         run: |
           ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
           mkdir -p ~/${{ env.IMAGE_NAME }}
           cd ~/${{ env.IMAGE_NAME }}
+          git init
           git remote add origin ${{ env.REPO }}
           git fetch origin
           git checkout main
@@ -51,8 +50,6 @@ jobs:
     name: Copy config and start service
     runs-on: self-hosted
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
     - name: Copy config
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
