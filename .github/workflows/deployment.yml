@@ -36,7 +36,7 @@ jobs:
       run: |
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
         docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
-        docker build -t ${{ env.IMAGE_PATH }} .
+        docker build --no-cache -t ${{ env.IMAGE_PATH }} .
         docker push ${{ env.IMAGE_PATH }}
   deploy:
     needs: publish
@@ -56,7 +56,7 @@ jobs:
         ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
         cd ~/${{ env.IMAGE_NAME }}
         docker compose down
-        docker system prune -af
+        docker system prune --all --force
         docker compose up -d 
         exit
   nginx:
