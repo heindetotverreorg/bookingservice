@@ -14,6 +14,7 @@ const init = async (page, freshBrowser, url) => {
 }
 
 const login = async (page, loginName, loginPassword) => {
+    console.log('login')
     try {
       await page.waitForSelector('input[name="username"]')
       await page.evaluate((loginName, loginPassword) => {
@@ -28,6 +29,7 @@ const login = async (page, loginName, loginPassword) => {
 }
 
 const selectSport = async (page) => {
+    console.log('selectSport')
     try {
         await page.select('#matrix-sport', 'sport/1280')
     } catch (error) {
@@ -36,6 +38,7 @@ const selectSport = async (page) => {
 }
 
 const selectDate = async (page, date, pass = 0, reverse) => {
+    console.log('selectDate')
     try {
         let selector = ''
         if (date.includes('-')) {
@@ -63,6 +66,7 @@ const selectDate = async (page, date, pass = 0, reverse) => {
 }
 
 const selectCourtAndTime = async (page, time, pass, court = 4) => {
+    console.log('selectCourtAndTime')
     const [hours, minutes] = time.split(':')
     let newtime = hours.length === 1 ? `0${hours}:${minutes}` : `${hours}:${minutes}`
 
@@ -106,6 +110,7 @@ const selectCourtAndTime = async (page, time, pass, court = 4) => {
 }
 
 const checkForBookingType = async (page) => {
+    console.log('checkForBookingType')
     try {
         const els = await page.evaluate(() => {
             const popup = document.querySelector('.lightbox')
@@ -124,6 +129,7 @@ const checkForBookingType = async (page) => {
 }
 
 const selectLongerTimeSlot = async (page) => {
+    console.log('selectLongerTimeSlot')
     const selector = `select[name="end_time"]`
 
     await page.waitForSelector(selector)
@@ -146,6 +152,7 @@ const selectLongerTimeSlot = async (page) => {
 }
 
 const getEndTime = async (page) => {
+    console.log('getEndTime')
     try {
       const selector = `select[name="end_time"]`
 
@@ -167,6 +174,7 @@ const getEndTime = async (page) => {
 }
 
 const selectPeople = async (page, people, nonMemberShipAccount, nonMemberShipAccountOffset) => {
+    console.log('selectPeople')
     console.log(nonMemberShipAccount, nonMemberShipAccountOffset)
     try {
         const selectedPeople = []
@@ -251,6 +259,7 @@ const selectPeople = async (page, people, nonMemberShipAccount, nonMemberShipAcc
 }
 
 const selectCourtTimePeopleAndConfirm = async (pass, page, time, people, test, isPreviousBookingPeak) => {
+    console.log('selectCourtTimePeopleAndConfirm')
     if (isPreviousBookingPeak || pass > 1) {
         return {}
     }
@@ -279,6 +288,7 @@ const selectCourtTimePeopleAndConfirm = async (pass, page, time, people, test, i
 
 
 const book = async (page, people, nonMemberShipAccountOffset, test) => {
+    console.log('book')
     try {
         // set event listener for dialog
         page.on('dialog', async dialog => {
