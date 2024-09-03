@@ -1,13 +1,12 @@
 const {
-    LOGGING,
-    isLoggingEnabled
+    LOGGING
 } = require('../../constants')
 const {
     cronToDateTime
 } = require('../utils');
 
 const log = (message, args) => {
-    if (!isLoggingEnabled) { 
+    if (process.env.ENABLE_LOGGING === 'false') { 
         return
     }
     

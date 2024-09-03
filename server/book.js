@@ -30,6 +30,7 @@ const bookPadel = async ({ date, time, people, loginName, loginPassword }, test,
     let pass = 0
 
     const dateToUse = convertFormattedDateToTimezonedDate(date)
+
     const browserConfig = {
         headless: process.env.PROD_LIKE,
         args: [
@@ -41,7 +42,7 @@ const bookPadel = async ({ date, time, people, loginName, loginPassword }, test,
         env: {
             DISPLAY: ":10.0"
         },
-        dumpio: !process.env.DISABLE_LOGGING,
+        dumpio: process.env.ENABLE_LOGGING !== 'false',
     }
 
     let browser
