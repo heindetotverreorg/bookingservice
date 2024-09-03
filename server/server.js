@@ -11,6 +11,13 @@ const { bookPadel } = require('./book')
 const { startJob, cancelJob, checkJob } = require('./cron')
 const { isDateMoreThanThreeDaysEarlier } = require('./utils')
 
+const {
+    LOGGING,
+} = require('../constants')
+const {
+    log
+} = require('./log')
+
 app.use(cors())
 app.use(express.json())
 app.use(express.static(path.join(__dirname, '../dist')));
@@ -31,9 +38,8 @@ app.post('/book', async (req, res) => {
         testDateTime
     } = req.body
 
-    console.log(req.body)
 
-    console.log(testDateTime, isDateMoreThanThreeDaysEarlier(date))
+    log(LOGGING.STEP_LOG, req.body)
 
     const data = testDateTime || isDateMoreThanThreeDaysEarlier(date)
         ? await startJob({ date, time, people, loginName, loginPassword }, testDateTime, test)
@@ -52,7 +58,7 @@ app.post('/book-start-scheduled-booking', async (req, res) => {
         testDateTime
     } = req.body
 
-    console.log(req.body)
+    log(LOGGING.STEP_LOG, req.body)
 
     const data = await startJob({ date, time, people, loginName, loginPassword }, testDateTime, test)
     res.send(data)

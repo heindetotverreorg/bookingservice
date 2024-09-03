@@ -19,8 +19,8 @@ const {
     log
 } = require('./log')
 
-const bookPadel = async ({ date, time, people, loginName, loginPassword }, test, cron = false) => { 
-    console.log('bookPadel')
+const bookPadel = async ({ date, time, people, loginName, loginPassword }, test, cron = false) => {
+    log(LOGGING.STEP_LOG, 'booking logic started')
     if (cron) {
         const { hour, minute, seconds, writtenDay } = breakDownCurrentTime()
         log(LOGGING.START_CRON_JOB, { writtenDay, hour, minute, seconds })
@@ -31,7 +31,7 @@ const bookPadel = async ({ date, time, people, loginName, loginPassword }, test,
 
     const dateToUse = convertFormattedDateToTimezonedDate(date)
     const browserConfig = {
-        headless: process.env.PROD_LIKE ? true : false,
+        headless: process.env.PROD_LIKE,
         args: [
             '--no-sandbox', 
             '--disable-setuid-sandbox',
@@ -41,21 +41,18 @@ const bookPadel = async ({ date, time, people, loginName, loginPassword }, test,
         env: {
             DISPLAY: ":10.0"
         },
-        dumpio: true, // to display log
+        dumpio: !process.env.DISABLE_LOGGING,
     }
-
-    console.log(browserConfig)
 
     let browser
     let page
 
     try {
-        console.log('set browser and page')
+        log(LOGGING.STEP_LOG, 'set browser and page')
         browser = await puppeteer.launch(browserConfig);
-        console.log('browser set')
-        console.log(browser)
+        log(LOGGING.STEP_LOG, 'browser set')
         page = await browser.newPage();
-        console.log('page created')
+        log(LOGGING.STEP_LOG, 'page created')
     } catch (error) {
         console.log(error)
         return { error }

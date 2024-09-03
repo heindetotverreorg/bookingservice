@@ -8,6 +8,7 @@ services:
       - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
       - VUE_APP_SERVERPORT=3000
       - PROD_LIKE=true
+      - DISABLE_LOGGING=true
     ports:
       - 8080:3000
     command: npm run start

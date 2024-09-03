@@ -6,6 +6,12 @@ const {
     handleError,
     parseTimeAndAdd,
 } = require('./../utils')
+const {
+    LOGGING,
+} = require('../../constants')
+const {
+    log
+} = require('../log')
 
 const init = async (page, freshBrowser, url) => {
     browser = freshBrowser
@@ -14,7 +20,7 @@ const init = async (page, freshBrowser, url) => {
 }
 
 const login = async (page, loginName, loginPassword) => {
-    console.log('login')
+    log(LOGGING.STEP_LOG, 'login')
     try {
       await page.waitForSelector('input[name="username"]')
       await page.evaluate((loginName, loginPassword) => {
@@ -29,7 +35,7 @@ const login = async (page, loginName, loginPassword) => {
 }
 
 const selectSport = async (page) => {
-    console.log('selectSport')
+    log(LOGGING.STEP_LOG, 'selectSport')
     try {
         await page.select('#matrix-sport', 'sport/1280')
     } catch (error) {
@@ -38,7 +44,7 @@ const selectSport = async (page) => {
 }
 
 const selectDate = async (page, date, pass = 0, reverse) => {
-    console.log('selectDate')
+    log(LOGGING.STEP_LOG, 'selectDate')
     try {
         let selector = ''
         if (date.includes('-')) {
@@ -66,7 +72,7 @@ const selectDate = async (page, date, pass = 0, reverse) => {
 }
 
 const selectCourtAndTime = async (page, time, pass, court = 4) => {
-    console.log('selectCourtAndTime')
+    log(LOGGING.STEP_LOG, 'selectCourtAndTime')
     const [hours, minutes] = time.split(':')
     let newtime = hours.length === 1 ? `0${hours}:${minutes}` : `${hours}:${minutes}`
 
@@ -110,7 +116,7 @@ const selectCourtAndTime = async (page, time, pass, court = 4) => {
 }
 
 const checkForBookingType = async (page) => {
-    console.log('checkForBookingType')
+    log(LOGGING.STEP_LOG, 'checkForBookingType')
     try {
         const els = await page.evaluate(() => {
             const popup = document.querySelector('.lightbox')
@@ -129,7 +135,7 @@ const checkForBookingType = async (page) => {
 }
 
 const selectLongerTimeSlot = async (page) => {
-    console.log('selectLongerTimeSlot')
+    log(LOGGING.STEP_LOG, 'selectLongerTimeSlot')
     const selector = `select[name="end_time"]`
 
     await page.waitForSelector(selector)
@@ -152,7 +158,7 @@ const selectLongerTimeSlot = async (page) => {
 }
 
 const getEndTime = async (page) => {
-    console.log('getEndTime')
+    log(LOGGING.STEP_LOG, 'getEndTime')
     try {
       const selector = `select[name="end_time"]`
 
@@ -174,8 +180,7 @@ const getEndTime = async (page) => {
 }
 
 const selectPeople = async (page, people, nonMemberShipAccount, nonMemberShipAccountOffset) => {
-    console.log('selectPeople')
-    console.log(nonMemberShipAccount, nonMemberShipAccountOffset)
+    log(LOGGING.STEP_LOG, 'selectPeople')
     try {
         const selectedPeople = []
 
@@ -259,7 +264,7 @@ const selectPeople = async (page, people, nonMemberShipAccount, nonMemberShipAcc
 }
 
 const selectCourtTimePeopleAndConfirm = async (pass, page, time, people, test, isPreviousBookingPeak) => {
-    console.log('selectCourtTimePeopleAndConfirm')
+    log(LOGGING.STEP_LOG, 'selectCourtTimePeopleAndConfirm')
     if (isPreviousBookingPeak || pass > 1) {
         return {}
     }
@@ -288,7 +293,7 @@ const selectCourtTimePeopleAndConfirm = async (pass, page, time, people, test, i
 
 
 const book = async (page, people, nonMemberShipAccountOffset, test) => {
-    console.log('book')
+    log(LOGGING.STEP_LOG, 'book')
     try {
         // set event listener for dialog
         page.on('dialog', async dialog => {
@@ -367,16 +372,16 @@ const book = async (page, people, nonMemberShipAccountOffset, test) => {
         }
 
         if (test) {
-            console.log('TEST = SUCCESS')
             await page.click('#__make_cancel2')
             await delay(1000)
             await page.click('#__make_cancel')
+            console.log('TEST = SUCCESS')
             await delay(1000)
         } else {
-            console.log('REAL BOOKING = SUCCESS')
             await page.click('#__make_submit2')
             await delay(1000)
             await page.goBack()
+            console.log('REAL BOOKING = SUCCESS')
             await delay(1000)
         }
         

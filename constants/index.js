@@ -1,4 +1,5 @@
 const port = process.env.VUE_APP_SERVERPORT || 3003
+const isLoggingEnabled = !process.env.DISABLE_LOGGING
 
 const URL_TO_CRAWL = 'https://bent.baanreserveren.nl/reservations'
 
@@ -13,10 +14,12 @@ const LOGGING = {
     CRON_TEST: 'CRON_TEST',
     ERROR: 'ERROR',
     NO_CRON_JOB: 'NO_CRON_JOB',
-    START_CRON_JOB: 'START_CRON_JOB'
+    START_CRON_JOB: 'START_CRON_JOB',
+    STEP_LOG: 'STEP_LOG'
 }
 
 module.exports = {
+    isLoggingEnabled,
     port,
     LOGGING,
     URL_TO_CRAWL,

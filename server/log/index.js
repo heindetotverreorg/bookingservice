@@ -1,11 +1,16 @@
 const {
-    LOGGING
+    LOGGING,
+    isLoggingEnabled
 } = require('../../constants')
 const {
     cronToDateTime
 } = require('../utils');
 
 const log = (message, args) => {
+    if (!isLoggingEnabled) { 
+        return
+    }
+    
     if (message === LOGGING.CRON_CANCELLED) {
         const string = `Scheduled job has cancelled`
 
@@ -57,6 +62,10 @@ const log = (message, args) => {
 
     if (message === LOGGING.START_CRON_JOB) {
         console.log(`STARTED FROM CRON JOB AT (EXACT RUN TIME): ${args.writtenDay} ${args.hour}:${args.minute}:${args.seconds}`)
+    }
+
+    if (message === LOGGING.STEP_LOG) {
+        console.log(args)
     }
 }
 
