@@ -35,7 +35,8 @@ const bookPadel = async ({ date, time, people, loginName, loginPassword }, test,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
         env: {
             DISPLAY: ":10.0"
-        }
+        },
+        dumpio: true, // to display log
     }
 
     console.log(browserConfig)
