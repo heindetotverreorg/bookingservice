@@ -37,8 +37,16 @@ const bookPadel = async ({ date, time, people, loginName, loginPassword }, test,
         }
     }
 
-    const browser = await puppeteer.launch(browserConfig);
-    const page = await browser.newPage();
+    let browser
+    let page
+
+    try {
+        browser = await puppeteer.launch(browserConfig);
+        page = await browser.newPage();
+    } catch (error) {
+        console.log(error)
+        return { error }
+    }
   
     try {
         await init(page, browser, URL_TO_CRAWL)
