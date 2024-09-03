@@ -12,7 +12,7 @@ env:
   USER_NAME: ${{ secrets.DOCKER_NAMESPACE }}
 jobs: 
   unit-test: 
-    name: Unit test suite
+    name: Unit tests
     runs-on: self-hosted
     steps: 
       - name: Get code
@@ -27,7 +27,7 @@ jobs:
         run: npm test
   build-push-image:
     needs: unit-test
-    name: Checkout code, build and push image
+    name: Build and push image
     runs-on: self-hosted
     steps:
       - name: Checkout Code
