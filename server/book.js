@@ -38,12 +38,17 @@ const bookPadel = async ({ date, time, people, loginName, loginPassword }, test,
         }
     }
 
+    console.log(browserConfig)
+
     let browser
     let page
 
     try {
+        console.log('set browser and page')
         browser = await puppeteer.launch(browserConfig);
+        console.log('browser set')
         page = await browser.newPage();
+        console.log('page created')
     } catch (error) {
         console.log(error)
         return { error }
