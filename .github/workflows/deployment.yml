@@ -11,7 +11,7 @@ env:
   IMAGE_NAME: bookingservice
   USER_NAME: ${{ secrets.DOCKER_NAMESPACE }}
 jobs: 
-  test: 
+  unit-test: 
     name: Unit test suite
     runs-on: self-hosted
     steps: 
@@ -25,9 +25,9 @@ jobs:
         run: npm ci
       - name: Test
         run: npm test
-  deploy:
-    needs: test
-    name: Checkout code and build and publish image
+  build-push-image:
+    needs: unit-test
+    name: Checkout code, build and push image
     runs-on: self-hosted
     steps:
       - name: Checkout Code
@@ -50,8 +50,8 @@ jobs:
           docker login -u ${{ github.actor }} -p ${{ env.DOCKER_PASSWORD }}
           docker push ${{ env.IMAGE_PATH }}
           ENDSSH
-  start:
-    needs: deploy
+  restart-service:
+    needs: build-push-image
     name: Restart the docker service
     runs-on: self-hosted
     steps:
