@@ -31,7 +31,8 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Checkout Code
-      # no need to setup ssh because the GitHub runner runs on the same domain as the server
+        # no need to setup ssh because the GitHub runner runs on the same domain as the server
+        # checkout the code to the server
         run: |
           ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
           rm -rf ${{ env.IMAGE_NAME }}
@@ -43,6 +44,7 @@ jobs:
           git checkout main
           ENDSSH
       - name: Build and Publish image
+      # build the image and push it to the docker registry
         run: |
           ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
           cd ~/${{ env.IMAGE_NAME }}
@@ -56,6 +58,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Restart service
+      # restart the docker service
         run: |
           ssh ${{ env.USER_NAME }}@${{ secrets.SERVER_HOST }} -p 22 -o ConnectTimeout="10" -o StrictHostKeyChecking=no <<'ENDSSH'
           cd ~/${{ env.IMAGE_NAME }}
