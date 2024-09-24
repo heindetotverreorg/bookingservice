@@ -213,6 +213,7 @@ import { SERVER_URL } from '../constants'
     date.set('minutes', minutes)
 
     const [hourtz, minutestz] = time.split(':')
+    
     dateTimezoned.set('hour', hourtz)
     dateTimezoned.set('minutes', minutestz)
     return formatToRTFC(dateTimezoned)
